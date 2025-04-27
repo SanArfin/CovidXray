@@ -42,4 +42,27 @@ Project Organization
 
 --------
 
+Data / Image organisation
+------------
+
+It is important to follow the structure from above `Project Organization` to ensure all participants could work with the sources in the same way! So avoid using absolute pathes in the source code is important - use relative paths instead! The folder `data` is alreade configured in `.gitignore` file and will not be included into the git repository.
+
+The downlaoded dataset (archive.zip) need to be downloded and copied to `data/raw` folder. Then un-zip it there, as a result there is a new subfolder: `COVID-19_Radiography_Dataset`. 
+
+Any data and/or ouput generated from our source code must be stored in: `data/raw/processed`
+
+Sample folder structure
+```
+    ├── data
+    │   ├── processed
+    │   |   ├── converted_grayscale
+    │   |   ├── normalized_xrays
+    │   |   ├── processed_xrays
+    │   |   └── *.csv, *.xlsx, *,npz, etc.
+    │   └── raw
+    │       ├── COVID-19_Radiography_Dataset
+    │       └── archive.zip
+```
+
+
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
