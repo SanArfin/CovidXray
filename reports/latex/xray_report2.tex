@@ -28,27 +28,52 @@
 \section{Methods}
 
 \subsection{Prepare Data for Modelling}
-Just a summary of the points we found out in report 1, that we have to do with the images. Maybe we need a different order.
+Just a summary of the points we found out in report 1, that we have to do with the images. Maybe we need a different order.\\
+!!!Maybe for each of the following items we should write a sepearte subsection (or a subsection of combination of some items) and show an example of how it changed the image (where necessary). !!!\\
+\\
+!!!Maybe we need two different data preparation pipelins: one for the machine learning models and another one for the deep learning models.!!!\\
+
 \begin{itemize}
-    \item convert to grayscale
+    \item convert images and masks to grayscale
+    \item apply Gaussian Blur to images
     \item Contrast Enhancement with CLAHE
-    \item resize the masks and combine them with images
+    \item apply Gaussian Blur to images
+    \item resize the masks 
+    \item convert masks to binary images
+    \item combine masks with images
     \item Pixel Value Normalization
     \item Label Encoding: Convert categorical class labels (e.g., COVID, Normal, Pneumonia, Lung Opacity) into numerical format for compatibility with machine learning algorithms.
     \item Dataset Splitting: Partition the dataset into training, validation, and test subsets to enable robust model evaluation and prevent data leakage.
     \item Address Class Imbalance: Since the distribution between the classes is not balanced (for example Viral Pneumonia images are far less numerous than the Normal images) we have to address this problem before the training stage. Appropriate strategies will be applied, such as:
     \begin{itemize}
-        \item Class weighting during model training
-        \item Oversampling/undersampling
+        %\item Class weighting during model training
+        %\item Oversampling/undersampling
         \item Data augmentation for minority classes
     \end{itemize}
     \item This ensures the model does not become biased toward the majority classes and maintains fair performance across all categories.
 \end{itemize}
 
-Maybe we need two different data preparation pipelins: one for the machine learning models and another one for the deep learning models
 
-\subsubsection{Prepare Data for Machine Learning Models}
 
+\subsubsection{Prepare Data for Machine Learning Models - Feature Extraction}
+Describe why we have to do this. And what it is. 
+\\
+
+\underline{HOG:}\\
+infos and results for HOG-method
+\\
+
+\underline{VGG:}\\
+infos and results for VGG-method
+\\
+
+\underline{other:}\\
+infos and results for another method we tried
+\\
+
+\underline{combined methods:}
+infos and results for a combination of methods
+\\
 
 \subsubsection{Prepare Data for Deep Learning Models}
 
