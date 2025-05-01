@@ -56,3 +56,7 @@ openpyxl
 scikit-learn
 nbformat 
 nbclient
+tensorflow
+scikit-image
+umap
+tqdm
