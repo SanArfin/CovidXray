@@ -60,3 +60,4 @@ tensorflow
 scikit-image
 umap
 tqdm
+Scikit-Optimize
