@@ -174,3 +174,7 @@ data/
 #/reports/latex/*.pdf
 /reports/latex/*.synctex.gz
 /reports/latex/*.toc
+
+# models/local folder
+# models which should be uploaded to git should be in folder models
+models/local
