@@ -2,6 +2,7 @@
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{multirow} % required for advanced tables
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
@@ -80,19 +81,42 @@ Input: Class labels like "COVID", "Normal", "Lung Opacity", "Viral Pneumonia".\\
 Operation: Convert categorical class labels into numeric labels using LabelEncoder (e.g., "COVID" = 0,"Lung Opactiy" = 1, "Normal" = 2, "Viral Pneumonia" = 3 ).\\
 Output: Encoded labels as numeric values, stored in an array (e.g., [0, 1, 0, 2 ,...] for the respective classes).\\
 
-\subsubsection{Split data into training and testing}
+\subsubsection{Split data into training and testing} \label{split_test_train}
 Input: Normalized images (of size 299x299) and encoded labels.\\
 Operation: Split the data into training and testing sets, 80\% for training and 20\% for testing. We used the paramter "random\_state" of the function 
 "sklearn.model\_selection.train\_test\_split" to make sure that the split is reproducable and we use the same train and test sets for working with the differend models.\\
 As we have an imbalanced number of images in the different classes, we used the parameter "stratify" of the function "sklearn.model\_selection.train\_test\_split". This
-ensures that the train and test datasets have the same proportion of classes as the original dataset. The class imbalance will be fixed in the train dataset later.\\
+ensures that the train and test datasets have the same proportion of classes as the original dataset. Table \ref{tab:dataset_statistics} shows the number of images in 
+the test and train dataset per class.\\
+The class imbalance will be fixed in the train dataset later, in section \ref{augment}.\\
 Output: Two datasets:
 \begin{itemize}
     \item Training set: Images (normalized) and labels (encoded).
     \item Testing set: Images (normalized) and labels (encoded)
 \end{itemize}
 
-\subsubsection{Address Class Imbalance by Data Augmentation}
+% Requires: \usepackage{multirow}
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        & \multicolumn{1}{c|}{Original dataset} & \multicolumn{1}{c|}{Test dataset} & \multicolumn{4}{c|}{Train dataset} \\ \hline
+        & & & No. & No. of & Augmented & No. of images \\ 
+        & & & \makebox[0pt][c]{of} & augmentations & images & (augmented \\ 
+        & & & images & & & + orig) \\ \hline
+        COVID & 3616 & 723 & 2893 & 2 & 5786 & 8679 \\ \hline
+        Lung Opacity & 6012 & 1203 & 4809 & 7 & 4809 & 9618 \\ \hline
+        Normal & 10192 & 2038 & 8154 & 0 & 0 & 8154 \\ \hline
+        Viral Pneumonia & 1345 & 269 & 1076 & 1 & 7532 & 8608 \\ \hline
+        Total number & & & & & & \\ 
+        of images & 21165 & 4233 & 16932 & - & 18127 & 35059 \\ \hline
+    \end{tabular}
+    \caption{Number of images per class in the original dataset, in the test dataset and in the train dataset.}
+    \label{tab:dataset_statistics}
+\end{table}
+
+
+\subsubsection{Address Class Imbalance by Data Augmentation} \label{augment}
 Since the distribution between the classes is not balanced (for example Viral Pneumonia images are far less numerous than the Normal images) we have to address this problem 
 before the training stage. Appropriate strategies can be applied, such as:
 \begin{itemize}
@@ -103,10 +127,37 @@ before the training stage. Appropriate strategies can be applied, such as:
 This ensures the model does not become biased toward the majority classes and maintains fair performance across all categories. For our dataset (which consist of images) data augmentation is the most suited.
 
 Input: Training dataset \\%with normalized images (of size 299x299).\\
-Operation: Apply augmentation techniques like rotation and shifting to artificially increase number of images in the minority classes "COVID", "Lung Opacity" and "Viral Pneumonia".\\
-Output: Augmented images, which are variations of the original images, still of size 299x299. These augmented images are then used to train the model more robustly.\\
-\colorbox{yellow}{ToDo: Yvonne insert a graph with examples of augmented images.}\\
-\colorbox{yellow}{ToDo: Yvonne insert table to show how many images we have per class before and after.}
+Operation: Apply augmentation techniques like rotation and shifting to artificially increase number of images in the minority classes "COVID", "Lung Opacity" and 
+"Viral Pneumonia".\\
+Output: Augmented images, which are variations of the original images, still of size 299x299. These augmented images are then used to train the model more robustly. 
+Table \ref{tab:dataset_statistics} shows the number of images per class before augmentation, the number of augmentations per class which were applied and the
+final number of images in the train dataset. The final train dataset includes the preprocessed, non-augmented images plus the augmented images.\\
+Figure \ref{fig:aug_example_covid}, figure \ref{fig:aug_example_lung_opcacity} and figure \ref{fig:aug_example_viral_pn} show for each of the classes which needed 
+augmentation the non-augmented image and its augmentations. As the class COVID needed 2 augmentations (see \ref{tab:dataset_statistics}) figure \ref{fig:aug_example_covid} 
+shows 2 augmentated images. 
+
+
+\begin{figure}[!htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{aug_example_covid.png}
+    \caption{Example of processed X-ray image combined with mask and its augmentations for the class "COVID".}
+    \label{fig:aug_example_covid}
+\end{figure}
+
+\begin{figure}[H] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=0.65\linewidth]{aug_example_lung_opcacity.png}
+    \caption{Example of processed X-ray image combined with mask and its augmentations for the class "Lung opacity".}
+    \label{fig:aug_example_lung_opcacity}
+\end{figure}
+
+\begin{figure}[!htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{aug_example_viral_pn.png}
+    \caption{Example of processed X-ray image combined with mask and its augmentationsfor the class "Viral pneumonia".}
+    \label{fig:aug_example_viral_pn}
+\end{figure}
+
 
 \subsubsection{Feature Extraction}
 Since we have a large dataset consisting of a total of 35059 images just in the train set it is a good idea to identify important features to reduce the computing time.
@@ -153,7 +204,7 @@ In simpler terms, we are working with feature vectors derived from each image, n
 particular characteristic (such as the gradient of pixel intensity) of the image after applying the HOG technique.
 So, (35059, 8100) indicates that we have 35059 images, and each image has been transformed into a feature vector of length 8100 after HOG processing.
 
-\begin{figure}[h!] % the [h!] helps force it "here"
+\begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{hogfeatures_all.png}
     \caption{Visualisation of hog features}
@@ -282,7 +333,7 @@ We got an Accuracy: 58.04\%. The model made bad guesses, especially for Normal a
 \\
 \textbf{3rd trial}: Images without masks resized without filters(Figure \ref{fig:Logistic_Regression}C)we also fed the model same small images, but now the whole image is visible. This increased the accuracy to 69.24\%  and displayed a nice balance across all disease types.
 \\
-\begin{figure}[ht] % the [h!] helps force it "here"
+\begin{figure}[H] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{lr1,2,3.png}
     \caption{Logistic Regression models A, B,C}
@@ -325,7 +376,7 @@ In conclusion , the Logistic Regression Model on hog features with Best C: 0.01 
 Room for Improvement: Logistic regression might not be the best choice for such a high-dimensional feature set. Therefore we next chose to experiment with other models like Support Vector Machines (SVM) and Random Forests, which could perform better without requiring dimensionality reduction.
 
 
-\begin{figure}[h!] % the [h!] helps force it "here"
+\begin{figure}[H] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{logreg2,a,b,c.png}
     \caption{More Logistic Regression models A, B,C}
@@ -336,23 +387,26 @@ Room for Improvement: Logistic regression might not be the best choice for such 
 \subsubsection{Random Forst}
 \colorbox{yellow}{ToDO Alex}
 
-\subsubsection{SVM}
-Linear SVM
+\subsubsection{Support Vector Machines (SVM)}
+There are two types of SVM models: linear and nonlinear SVM. Here's a brief summary of both: \\
+\underline{Linear SVM:}
 \begin{itemize}
     \item Separates data using a straight line (in 2D) or a hyperplane (in higher dimensions).
     \item Assumes that the data is linearly separable (i.e., classes can be separated by a straight boundary).
     \item Uses a linear kernel.
     \item Fast and efficient for high-dimensional, sparse data like text or HOG features.
+    \item Good for: When the data has clear linear boundaries.
 \end{itemize}
-Good for: When the data has clear linear boundaries.\\
-\\
-Nonlinear SVM 
+\underline{Nonlinear SVM:}
 \begin{itemize}
     \item Can separate data with curved or complex boundaries.
     \item Uses kernel tricks (e.g., RBF, polynomial) to map the data into higher dimensions where it may become linearly separable.
     \item More flexible but computationally expensive, especially on large datasets.
-Good for: Data where classes are intertwined and not separable by a straight line.
+    \item Good for: Data where classes are intertwined and not separable by a straight line.
 \end{itemize}
+
+In the following tests we used nonlinear and linear SVMs. As our task  is a classification problem we used SVC models.
+
 \textbf{1th trial } \colorbox{yellow}{ToDo Yvonne}\\ 
 \textbf{2th trial } \colorbox{yellow}{ToDo Yvonne}\\
 \textbf{3th trial } \colorbox{yellow}{ToDo Yvonne}\\
