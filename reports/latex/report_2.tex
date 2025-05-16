@@ -10,6 +10,8 @@
 \usepackage{parskip}
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
+\usepackage{subfig}
+%\usepackage{subcaption}
 
 \graphicspath{{../figures/figures_report_2/}}
 
@@ -376,7 +378,7 @@ In conclusion , the Logistic Regression Model on hog features with Best C: 0.01 
 Room for Improvement: Logistic regression might not be the best choice for such a high-dimensional feature set. Therefore we next chose to experiment with other models like Support Vector Machines (SVM) and Random Forests, which could perform better without requiring dimensionality reduction.
 
 
-\begin{figure}[H] % the [h!] helps force it "here"
+\begin{figure}[!ht] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{logreg2,a,b,c.png}
     \caption{More Logistic Regression models A, B,C}
@@ -407,10 +409,51 @@ There are two types of SVM models: linear and nonlinear SVM. Here's a brief summ
 
 In the following tests we used nonlinear and linear SVMs. As our task  is a classification problem we used SVC models.
 
-\textbf{1th trial } \colorbox{yellow}{ToDo Yvonne}\\ 
-\textbf{2th trial } \colorbox{yellow}{ToDo Yvonne}\\
+\textbf{1th trial}\\
+The first trial to run a SVG model was with a dataset with preprocessed images and added masks. The image size was reduced to 128x128 pixels and we tried 
+to use the entire training dataset (approx. 35'000 images). For this first attempt no hyperparameter optimization technique was used. Instead we tried some random 
+hyperparameters: 
+\begin{itemize}
+    \item gamma=0.01
+    \item kernel='poly'
+    \item other hyperparameter were left to default
+\end{itemize}
+After over 6 hours the training of the model was not finished. We stopped it, because this approach had proven as impractical. As it took that much time even without
+using a hyperparameter optimization technique like GridSearchCV, we needed to change the dataset (number or/ and size of images) for further tests.
+
+
+\textbf{2th trial }\\
+For the second trial we tried to work with a considerably smaller dataset to reduce the training speed. The aim was to get a SVC model running. And maybe in future 
+tests reenlarge the dataset again. Therefore we reduced the size of the images and aswell the number (20x20 pixels and only 2000 images randomly chosen from the train 
+dataset). In this run we tried to use GridSearchCV to find the best parameters out of these options: 
+\begin{itemize}
+    \item C: 0.1, 1, 10, 100
+    \item loss: 'hinge', 'squared\_hinge'
+    \item max\_iter: 100, 1000
+\end{itemize}
+
+The best hyperparameter set was: C = 10,  gamma = 0.001 and kernel = rbf. The runtime was approx. 12 minutes. The classification report in figure 
+\ref{fig:SVC_2000_20x20_grid}a shows that the model has an overal accuracy of 65\%, but the prediction if class 0 (COVID) is very poor with an f1-score of only 0.29. The "normal" class could be best 
+predicted which can also be seen on the confusion matrix in figure \ref{fig:SVC_2000_20x20_grid}b.
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVC_grid_20_mask_slice2000_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVC_grid_20_mask_slice2000_cm_abs.png}}%
+  \caption{SVC model with 2000 images of size 20x20 pixels, best model with GridSearchCV (C = 10,  gamma = 0.001 and kernel = rbf)}
+  \label{fig:SVC_2000_20x20_grid}
+\end{figure}
+
+
+
 \textbf{3th trial } \colorbox{yellow}{ToDo Yvonne}\\
-\textbf{4th trial }SGDClassifier(Linear SVM) + HOG (With hyperparameter search) Figure \ref{fig:SVM_MODELS}A. SGD still supports hinge loss, so it behaves like a linear SVM and also Supports L1, L2, ElasticNet regularization.In this model we used Randomized searchCV best estimator pipeline(Standandr Scaler,PCA, SGD classifier). \begin{verbatim}
+SVC (Bayes instead of GridSearch)\\
+
+\textbf{4th trial } \colorbox{yellow}{ToDo Yvonne}\\
+SVClinear (128 x 128, 4000 images, non augmented)\\
+
+\textbf{5th trial }SGDClassifier(Linear SVM) + HOG (With hyperparameter search) Figure \ref{fig:SVM_MODELS}A. SGD still supports hinge loss, so it behaves like a linear SVM and also Supports L1, L2, ElasticNet regularization.In this model we used Randomized searchCV best estimator pipeline(Standandr Scaler,PCA, SGD classifier). \begin{verbatim}
 Best Hyperparameters found were:
 {'clf__penalty': 'l1', 'clf__learning_rate': 'optimal', 'clf__alpha': 0.001}
 \end{verbatim}
@@ -421,15 +464,15 @@ Therefore, the next steps would be to :
     \item try a Tree-based Model eg. XGBoost or LightGBM which handle non-linear relationships well and work directly on HOG features (no need to resize images)
     \item experiment with non-linear SVM on a subset of our data (e.g., 2–5k images) to test potential gains
 \end{itemize}
-\textbf{5th trial }So the next model we tested was grid search on nonlinear SVM using kernel rbf using a smaller dataset (5000) of hog features.(Figure \ref{fig:SVM_MODELS}B)We performed grid search with reduced parameter space.The Accuracy improved to 72\%, and we found the Best parameters: \texttt{svc\_ C= 1},\texttt {svc\_ gamma = scale}.
+\textbf{6th trial }So the next model we tested was grid search on nonlinear SVM using kernel rbf using a smaller dataset (5000) of hog features.(Figure \ref{fig:SVM_MODELS}B)We performed grid search with reduced parameter space.The Accuracy improved to 72\%, and we found the Best parameters: \texttt{svc\_ C= 1},\texttt {svc\_ gamma = scale}.
 \\
-\begin{figure}[h!] % the [h!] helps force it "here"
+\begin{figure}[htb!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{svm ABC.png}
     \caption{SVM MODELS}
     \label{fig:SVM_MODELS}
 \end{figure}
-\textbf{6th trial }Since SVC\- RBF kernel gave us better results we decided to run it on hog features after dimensionality reduction using PCA.TWe observed an accuracy of 77\%.The Cumulative explained variance for PCA by 200 components was 62.06\%. However the precision and recall for class 0 did not show much improvement and therefore, we proceeded with other ML models.\\
+\textbf{7th trial }Since SVC\- RBF kernel gave us better results we decided to run it on hog features after dimensionality reduction using PCA.TWe observed an accuracy of 77\%.The Cumulative explained variance for PCA by 200 components was 62.06\%. However the precision and recall for class 0 did not show much improvement and therefore, we proceeded with other ML models.\\
 
 
 In conclusion, the SVC model with RBF kernel on Hog features with PCA dimensionality reduction gave us the best accuracy of 77\%.
