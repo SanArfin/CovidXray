@@ -39,7 +39,7 @@
 
 \section{Machine Learning}
 
-\subsection{Preprocessing Pipeline for Machine Learning}
+\subsection{Preprocessing Pipeline for Machine Learning} \label{preprocessing_pipeline}
 The following subsections describe the different stages of preprocessing the data has run through before it was used for modelling.
 \subsubsection{Input}
 Input: Raw Images (299x299 RGB)
@@ -422,7 +422,7 @@ After over 6 hours the training of the model was not finished. We stopped it, be
 using a hyperparameter optimization technique like GridSearchCV, we needed to change the dataset (number or/ and size of images) for further tests.
 
 
-\textbf{2th trial }\\
+\textbf{2nd trial}\\
 For the second trial we tried to work with a considerably smaller dataset to reduce the training speed. The aim was to get a SVC model running. And maybe in future 
 tests reenlarge the dataset again. Therefore we reduced the size of the images and aswell the number (20x20 pixels and only 2000 images randomly chosen from the train 
 dataset). In this run we tried to use GridSearchCV to find the best parameters out of these options: 
@@ -433,7 +433,7 @@ dataset). In this run we tried to use GridSearchCV to find the best parameters o
 \end{itemize}
 
 The best hyperparameter set was: C = 10,  gamma = 0.001 and kernel = rbf. The runtime was approx. 12 minutes. The classification report in figure 
-\ref{fig:SVC_2000_20x20_grid}a shows that the model has an overal accuracy of 65\%, but the prediction if class 0 (COVID) is very poor with an f1-score of only 0.29. The "normal" class could be best 
+\ref{fig:SVC_2000_20x20_grid}a shows that the model has an overal accuracy of 65\%, but the prediction of class 0 (COVID) is very poor with an f1-score of only 0.29. The "normal" class could be best 
 predicted which can also be seen on the confusion matrix in figure \ref{fig:SVC_2000_20x20_grid}b.
 
 \begin{figure}[!ht]
@@ -447,11 +447,40 @@ predicted which can also be seen on the confusion matrix in figure \ref{fig:SVC_
 
 
 
-\textbf{3th trial } \colorbox{yellow}{ToDo Yvonne}\\
-SVC (Bayes instead of GridSearch)\\
+\textbf{3rd trial }\\
+Before trying to take more images with higher resulution, we tried to find options to make the training of the model faster.\\
+One idea was to use another method for the hyperpramater optimization. We tested "Bayesian Optimization" instead of GridSearchCV as it does not test every 
+combination of parameters, we hope that Bayes Optimization could be a faster option.\\
+The input data for this test was the same as in the previous test. The "Bayesian Optimization" found the same hyperparameters as in the previous test but finished 
+within only approx. 4 minutes. As this hyperpramater optimization method is about 3 times faster than GridSearchCV we will use this method for the next test with SVC 
+when we'll try to use more images with more pixels. \\
+Before doing further tests with the SVC model we did some research and found out, that SVC is not the best option for modelling with a lot of data. 
+If using more images and images with more pixels, we increase the number of rows AND the number of columns in our data frame. This means we have a lot more input
+data for our SVC model. The result of the search in the internet was, that using a linear SVC model could be a better option in our case. 
 
-\textbf{4th trial } \colorbox{yellow}{ToDo Yvonne}\\
-SVClinear (128 x 128, 4000 images, non augmented)\\
+\textbf{4th trial }\\
+As a conclusion of the previous tests we tried out a linear SVC model and used "Bayesian Optimization" for the hyperparameter search.\\
+The number of pixel was increased to 128x128 pixels and the number of images was increased as well. We used 4000 non augmented images (1000 of each class) to  which all
+preprocessing steps from \ref{preprocessing_pipeline} apart from data augmentation and feature extraction have been apllied. \\
+
+The best hyperparameter set was: C = 0.1,  loss = hinge, max\_iter=277. The runtime was approx. 1 hour. The classification report in figure 
+\ref{fig:SVC_4000_128x128_bayes}a shows that the model has an overal accuracy of only  57\%, but the prediction of class 0 (COVID) is  with an f1-score of 
+only 0.44. With an f1-score of 0.83 the "Viral pneumonia" class (3) is predicted better, which can also be seen on the confusion matrix in figure 
+\ref{fig:SVC_4000_128x128_bayes}b.
+
+The time needed to fit the model was about 1 hour, which is a lot for such poor prediction results. Maybe the model would perform better if more images or more pixels 
+per image would be used. But due to the long training times a training with more images is not an option.\\
+Therefore we decided to do further tests  with a SVC linear model not with the images but with extraced features.\\
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVClinear_bay_128_no_aug_mask_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVClinear_bay_128_no_aug_mask_cm_abs.png}}%
+  \caption{SVC model with 4000 images of size 128x128 pixels, best model with Bayes (C = 0.1,  loss = hinge, max\_iter=277f)}
+  \label{fig:SVC_4000_128x128_bayes}
+\end{figure}
+
 
 \textbf{5th trial }SGDClassifier(Linear SVM) + HOG (With hyperparameter search) Figure \ref{fig:SVM_MODELS}A. SGD still supports hinge loss, so it behaves like a linear SVM and also Supports L1, L2, ElasticNet regularization.In this model we used Randomized searchCV best estimator pipeline(Standandr Scaler,PCA, SGD classifier). \begin{verbatim}
 Best Hyperparameters found were:
