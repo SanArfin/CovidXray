@@ -136,7 +136,7 @@ Table \ref{tab:dataset_statistics} shows the number of images per class before a
 final number of images in the train dataset. The final train dataset includes the preprocessed, non-augmented images plus the augmented images.\\
 Figure \ref{fig:aug_example_covid}, figure \ref{fig:aug_example_lung_opcacity} and figure \ref{fig:aug_example_viral_pn} show for each of the classes which needed 
 augmentation the non-augmented image and its augmentations. As the class COVID needed 2 augmentations (see \ref{tab:dataset_statistics}) figure \ref{fig:aug_example_covid} 
-shows 2 augmentated images. 
+shows 2 augmented images. 
 
 
 \begin{figure}[!htb] % the [h!] helps force it "here"
@@ -460,7 +460,7 @@ data for our SVC model. The result of the search in the internet was, that using
 
 \textbf{4th trial }\\
 As a conclusion of the previous tests we tried out a linear SVC model and used "Bayesian Optimization" for the hyperparameter search.\\
-The number of pixel was increased to 128x128 pixels and the number of images was increased as well. We used 4000 non augmented images (1000 of each class) to  which all
+The number of pixel was increased to 128x128 pixels and the number of images was increased as well. We used 4000 non-augmented images (1000 of each class) to  which all
 preprocessing steps from \ref{preprocessing_pipeline} apart from data augmentation and feature extraction have been apllied. \\
 
 The best hyperparameter set was: C = 0.1,  loss = hinge, max\_iter=277. The runtime was approx. 1 hour. The classification report in figure 
@@ -469,15 +469,15 @@ only 0.44. With an f1-score of 0.83 the "Viral pneumonia" class (3) is predicted
 \ref{fig:SVC_4000_128x128_bayes}b.
 
 The time needed to fit the model was about 1 hour, which is a lot for such poor prediction results. Maybe the model would perform better if more images or more pixels 
-per image would be used. But due to the long training times a training with more images is not an option.\\
-Therefore we decided to do further tests  with a SVC linear model not with the images but with extraced features.\\
+per image would be used. But due to the long training times we considered a training with more images not as an option.\\
+Therefore we decided to do further tests with a SVC linear model not with the images but with extracted features.\\
 
 \begin{figure}[!ht]
   \centering
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVClinear_bay_128_no_aug_mask_cf_report.png}}%
   \qquad
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVClinear_bay_128_no_aug_mask_cm_abs.png}}%
-  \caption{SVC model with 4000 images of size 128x128 pixels, best model with Bayes (C = 0.1,  loss = hinge, max\_iter=277f)}
+  \caption{SVC model with 4000 images of size 128x128 pixels, best model with Bayes (C = 0.1,  loss = hinge, max\_iter=277)}
   \label{fig:SVC_4000_128x128_bayes}
 \end{figure}
 
@@ -501,13 +501,120 @@ Therefore, the next steps would be to :
     \caption{SVM MODELS}
     \label{fig:SVM_MODELS}
 \end{figure}
-\textbf{7th trial }Since SVC\- RBF kernel gave us better results we decided to run it on hog features after dimensionality reduction using PCA.TWe observed an accuracy of 77\%.The Cumulative explained variance for PCA by 200 components was 62.06\%. However the precision and recall for class 0 did not show much improvement and therefore, we proceeded with other ML models.\\
+\textbf{7th trial }Since SVC\- RBF kernel gave us better results we decided to run it on hog features after dimensionality reduction using PCA. We observed an accuracy of 77\%.The Cumulative explained variance for PCA by 200 components was 62.06\%. However the precision and recall for class 0 did not show much improvement and therefore, we proceeded with other ML models.\\
 
 
 In conclusion, the SVC model with RBF kernel on Hog features with PCA dimensionality reduction gave us the best accuracy of 77\%.
 
-\subsubsection{XGBoost}
-\colorbox{yellow}{ToDo Yvonne}
+\subsubsection{XGBoost - Extreme Gradient Boosting}
+XGBoost (Extreme Gradient Boosting) can be used for classification and regression problems. It is a popular tool often used in machine learning 
+competitions and  known  for handling large datasets efficiently. After the not very successful tests with e.g. SVM, the use of XGBoost looked promising.
+
+Here is a summary of hyperparameters we used: 
+
+\begin{itemize}
+    \item booster = gbtree
+    \item  objective = multi:softprob
+    \item learning\_rate = 0.3
+    \item tree\_method = hist
+    \item num\_class = 4
+    \item other hyperparameter were left to default
+\end{itemize}
+
+\textbf{1st trial} - XGBoost (128 x 128, non-augmented 4000 images, non augmented, with masks) \\
+For the first test with the XGBoost model we used the same input data as in the 4th trial with the SVM model. The number of pixel was 128x128 pixels and the number 
+of images was 4000 non-augmented images (1000 of each class). To these images all preprocessing steps from \ref{preprocessing_pipeline} apart from data 
+augmentation and feature extraction have been apllied.\\
+The training on this dataset took only 5 minutes which was much faster than using an SVClinear model (which took approx. 1 hour).\\
+
+For this first trial we chose the hyperparameter "number of boost rounds" very high (5000) but additionally used the "Early stopping technique" of XGBoost. Early stopping in XGBoost
+is a technique used to halt the training process if the model's performance on a validation set does not improve after a specified number of consecutive iterations, 
+thereby preventing overfitting. For our tests we used early\_stopping\_rounds=50.
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBoost_128_no_aug_mask_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBoost_128_no_aug_mask_cm_abs.png}}%
+  \caption{XGBoost with 4000 images of size 128x128 pixels}
+  \label{fig:XGBoost_128_no_aug_mask}
+\end{figure}
+
+Figure \ref{fig:XGBoost_128_no_aug_mask}a shows that the overall accuracy was 74\%. This accuracy is much higher than 57\% which the SVClinear model reached on
+the same dataset (cf. figure \ref{fig:SVC_4000_128x128_bayes}). The classification report and aswell the confusion matrix in figure \ref{fig:XGBoost_128_no_aug_mask}b 
+show that the XGBoost model, like the SVClinear model, best predicts the class "Viral Pneumonia" (3), 
+but with a f1-score of 94\% instead of only 83\%. XGBoost does a better prediction for the class "COVID" (0) with a f1-score of 62\% compared to the SVClinear model
+with only a f1-score of 44\%. But a f1-score of 62\% is still not very satisfactory. Further tests e.g. with the entire dataset are needed. 
+
+\textbf{2nd trial} - XGBoost (128 x 128, all images incl. augmentation, with masks)\\
+As a next test we tried to increase the number of images used for modelling. As input data we used all the images still with a reduced size of 128x128 pixels. 
+To these images all preprocessing steps from \ref{preprocessing_pipeline} apart from feature extraction have been apllied.\\
+As the first trial with XGBoost already showed, that we did not need 5000 "number of boost rounds" we reduced it in this test to 500 and additionally kept on 
+using the early stopping technique. \\
+Figure \ref{fig:XGBost_classifier_method_128_mask} shows that the overall accuracy is nearly the same as in the previous test where we used only 4000 non-augmented 
+images. The f1-score for the "COVID class" (0) is with 57\% even a bit lower. But for the other classes the f1-score increased compared to the first test with XGBoost.\\
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_mask_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_mask_cm_abs.png}}%
+  \caption{XGBoost with all images of size 128x128 pixels, with masks}
+  \label{fig:XGBost_classifier_method_128_mask}
+\end{figure}
+
+
+
+\textbf{3rd trial} - XGBoost (128 x 128,HOG-features)\\
+For this test we tried to use the HOG-extracted features as input data. The classification report in figure \ref{fig:XGBost_hog}a  and the confusion matrix
+in figure \ref{fig:XGBost_hog}b show that this did not improve the accuracy of 77\% and still the "COVID class" (0) is not predicted very well with an f1-score of
+only 57\%.
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_hog_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_hog_cm_abs.png}}%
+  \caption{XGBoost using hog features}
+  \label{fig:XGBost_hog}
+\end{figure}
+
+\textbf{4th trial} - XGBoost (128 x 128, all images, without masks, no filter (Clahe, Gaussian Blur)\\
+As a next step we tried to stick to use a big number of images and used all images inclduing the augmented images as input data. The images have been normalized but
+no filters and masks were applied. \\
+The classification report in figure \ref{fig:XGBost_classifier_method_128_nomask_nofilter}a and the confusion matrix in figure 
+\ref{fig:XGBost_classifier_method_128_nomask_nofilter}b show that this model has an overal accuracy of 86\% which is the best accuracy of all XGBoost models we 
+tried so far. This model can even predict the "COVID class" quiet good with an f1-score of 89\%. The worst f1-score has the "Lung-Opacity class" (1), with still 81%.\\
+There are two options which change in the input data could have made this improvement compared to the previous tests: using no masks or using no filters. 
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_nomask_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_nomask_cm_abs.png}}%
+  \caption{XGBoost with all images of size 128x128 pixels, without masks, no filters}
+  \label{fig:XGBost_classifier_method_128_nomask_nofilter}
+\end{figure}
+
+
+
+\textbf{5th trial} - XGBoost (128 x 128, all images, without masks, WITH filters (Clahe, Gaussian Blur)\\
+As a conclusion of the previous test (4th trial) we tried to use the same input data but this time using filters. The classification report in 
+figure \ref{fig:XGBost_classifier_method_128_nomask_withfilter}a and the confusion matrix in figure \ref{fig:XGBost_classifier_method_128_nomask_withfilter}b show
+that using the filters reduced the overal accuracy a bit to 85\% and also the f1-score for the "COVID class" (0) is only 84\% instead of 89\% as in the 
+test without filters. 
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_nomask_filters_cf_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{XGBost_classifier_method_128_nomask_filters_cm_abs.png}}%
+  \caption{XGBoost with all images of size 128x128 pixels, without masks, with filters}
+  \label{fig:XGBost_classifier_method_128_nomask_withfilter}
+\end{figure}
+
+As a next test we could try using masks and no filters. But as time in this project is reduced we moved on to using deep learning models which looks 
+more promising when working with images. 
 
 \subsubsection {DENSE NETWORKS: MLP-Classifier} 
 \colorbox{yellow}{Does this belong to the machine learning? Or is it Deep learning?}\\
