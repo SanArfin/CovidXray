@@ -824,14 +824,134 @@ In some papers which handle similar tasks the InceptionV3 model was used. (e. g.
 The keras InceptionV3 is a pre-trained convolutional neural network that has 311 layers. It has been already trained on more than a million images from the ImageNet database. This pretrained network can classify images into 1000 object categories, such as keyboard, mouse, pencil, and many animals. As a result, the network has learned rich feature representations for a wide range of images. The network has an image input size of 299-by-299. 
 
 \paragraph{1st trial with InceptionV3}\mbox{}\\
-ToDo Yvonne
+For this 1st trial the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 16
+\item 10 epochs 
+\item Adam optimizer (with default learning rate of 0.001)
+\item no callbacks used
+\item no fine-tuning has been done
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_04.keras_model_design}.
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_04.keras_model_design_nice.png}
+    \caption{Model design of 1st trial with InceptionV3}
+    \label{fig:inceptionv3_04.keras_model_design}
+\end{figure}
+
+The loss and accuracy per epoche in figure \ref{fig:inceptionv3_04_loss_accuracy} show that this model has no good convergence. The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_04_results} show that the overall accuracy is only 83\% and that the COVID-class is not very well predicted. The confusion matrix additionally shows that the data augmentation of the Normal-class helped that the Normal-class was predicted better, than as in prevous tests (c.f. figure \ref{fig:vgg16_yb_03_cm_norm.png}) .
+
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_04_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 1st trial with InceptionV3}
+    \label{fig:inceptionv3_04_loss_accuracy}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_04_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_04_cm_norm.png}}%
+  \caption{Modelling report and normalized confusion matrix of 1st trial with InceptionV3}
+  \label{fig:inceptionv3_04_results}
+\end{figure}
+
+
 
 \paragraph{2nd trial with InceptionV3}\mbox{}\\
-ToDo Yvonne
+For this 2nd trial the same settings were used than in the 1st trial, but this time callbacks have been used. As the model did not converge within 10 epochs we tried to double the number of epochs for this trial. In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 16
+\item 20 epochs 
+\item Adam optimizer (with default learning rate of 0.001)
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item no fine-tuning has been done
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_05.keras_model_design}.
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_05.keras_model_design_nice.png}
+    \caption{Model design of 2nd trial with InceptionV3}
+    \label{fig:inceptionv3_05.keras_model_design}
+\end{figure}
+
+With using the callbacks the learning rate was automatically reduced during training to 1e-05, but the train-loss and train-accuracy per epoche in figure \ref{fig:inceptionv3_05_loss_accuracy} still show a lot of oscillation and therefore no good convergence. The early stopping callback stopped the model after epoch 16 and the best model was the model after epoch 11.\\
+The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_05_results} show that the overall accuracy is still only 85\% and that the COVID-class is not very well predicted. But compared to the 1st trial the f1-score for the COVID-class increased from 0.75 to 0.81.
+
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_05_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 2nd trial with InceptionV3}
+    \label{fig:inceptionv3_05_loss_accuracy}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_05_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_05_cm_norm.png}}%
+  \caption{Modelling report and normalized confusion matrix of 2nd trial with InceptionV3}
+  \label{fig:inceptionv3_05_results}
+\end{figure}
+
 \paragraph{3rd trial with InceptionV3}\mbox{}\\
-ToDo Yvonne
+For this 3rd trial the same settings were used than in the 2nd trial, but this time the batch size was increased from 16 to 64. In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item Adam optimizer (with default learning rate of 0.001)
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item no fine-tuning has been done
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_06.keras_model_design}.
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_06.keras_model_design_nice.png}
+    \caption{Model design of 3rd trial with InceptionV3}
+    \label{fig:inceptionv3_06.keras_model_design}
+\end{figure}
+
+The learning rate was automatically reduced to 1e-05 due to the callback as in the previous test. The best model was saved after 15 epochs. \\
+Figure \ref{fig:inceptionv3_06_loss_accuracy} shows that increasing the batch size from 16 to 64 did not fix the oscillation of the train-loss and train-accuracy. And the validation-loss and validation-accuracy stagnetes. 
+
+The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_06_results} show that the overall accuracy is 86\%  (which is 1\% more than in the 2nd trial). The COVID-class is still the worst predicted class. But at least the f1-score increased by 1\% in this trial compared to the previous trial. 
+
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_06_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 3rd trial with InceptionV3}
+    \label{fig:inceptionv3_06_loss_accuracy}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_06_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_06_cm_norm.png}}%
+  \caption{Modelling report and normalized confusion matrix of 3rd trial with InceptionV3}
+  \label{fig:inceptionv3_06_results}
+\end{figure}
+
+
 \paragraph{4th trial with InceptionV3}\mbox{}\\
-ToDo Yvonne
+ToDo Yvonne - this is inceptionv3\_07
+
+\paragraph{5th trial with InceptionV3}\mbox{}\\
+ToDo Yvonne - this is inceptionv3\_08
+
+\paragraph{6th trial with InceptionV3}\mbox{}\\
+ToDo Yvonne - this is inceptionv3\_09
+
+\paragraph{7th trial with InceptionV3}\mbox{}\\
+ToDo Yvonne - this is inceptionv3\_10
 
 \subsubsection{DenseNet}
 
