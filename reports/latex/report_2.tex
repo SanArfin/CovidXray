@@ -256,7 +256,7 @@ infos and results for a combination of methods
 \end{itemize}
 
 
-\subsection{Metrics to Evaluate the Model Results}
+\subsection{Metrics to Evaluate the Model Results} \label{metrics_ML}
 Input: Trained machine learning model and the test set (augmented images, labels).\\
 Operation: Evaluate the model's performance using metrics like accuracy, F1 score, and confusion matrix to understand how well it classifies the different 
 image classes.\\
@@ -766,24 +766,77 @@ In conclusion, MLP Classifier on ResNet Features gave us the best accuracy(82\%)
 \section{Deep Learning}
 
 \subsection{Prepare Data for Deep Learning}
-\colorbox{yellow}{To Do: As we might have a different preprocessing pipeline we have to }\\
-\colorbox{yellow}{describe preprocessing of data we did for deep learning.}\\
+When trying to train different deep learning models, we figured out that we had to play around with the data. We tried different pre-preprocessing steps for the different models. Therefore, the different pre-processing steps are described in the respective chapters of the deep learning models.
 
 \subsection{Metrics to Evaluate the Model Results}
-Do we need this subsection again for DL or is it the same as for ML. 
-Maybe we can delete this subsection later.
+For the evaluation of the results of the deep learning models, we used the same methods (modelling report, confusion matrix) as for the evaluation of the meachine learning models, c.f. section \ref{metrics_ML}. \\
+Additionally we analyzed how the accuracy and the loss evolved over the different epochs. \\
 
-Grad-CAM?
+For some models we wanted to visualize which areas of an image contribute most to a model's decision. Therefore we used Grad-CAM whether the model is paying attention to relevant anatomical features in the X-ray images.
 
-\subsection{Modelling and Results}
-\subsubsection{Model 1 --> To be replaced with a name}
-This could be a CNN without transfer learning which Alex is working with. 
+\subsection{CNN models and results - without transfer learning}
+\subsubsection{self-build CNN}
+This could be a CNN without transfer learning which Saniya build.
 
-\subsubsection{Model 2 --> To be replaced with a name}
-This could be a pretrained model.
+\subsubsection{Do we have another self-build CNN?}
 
-\subsubsection{Model 3 --> To be replaced with a name}
-This could be a pretrained model.
+\subsection{Using pretrained models with transfer learning}
+
+\subsubsection{VGG16}
+
+
+\subsubsection{InceptionV3}
+\paragraph{Data pre-processing for InceptionV3 model}\mbox{}\\
+In order to make it easier to make changes in the input data, we decided that the processing of the input data should not be done offline before the modelling, but instead doing on the fly before starting to train the model. 
+The data has been split into train data (85\%) and test data (15\%). Then the train data has been re-split into the final train data (80\%) and validation data (20\%) which is used for validation during training the model. 
+The next step was to get rid of the imbalance between the 4 classes. We needed lot of training runs to figure out which pre-processing should be done in order to use the data for an InceptionV3 model. During this tests all layers of the pretrained model had been freezed. 
+These tests showed that we needed to use a dataset for training where the class imbalanced had been fixed by data augmentation. To augment only the minority classes (COVID, Lung Opacity and Viral Pneumonia) and use only the original images for the Normal-class did not work. This has led to the Normal-class was not predicted at all. The confusion matrices of these test all looked something like this, c. f. figure \ref{fig:vgg16_yb_03_cm_norm.png}.
+\begin{figure}%[h!] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=0.5\linewidth]{vgg16_yb_03_cm_norm.png}
+    \caption{Example of representative confusion matrix of the input data pre-processing tests.}
+    \label{fig:vgg16_yb_03_cm_norm.png}
+\end{figure}
+The confusion matrices showed that the Normal-class could not be predicted at all and the Viral Pneumonia-class was predicted quite well. This lead to the conclusion, that there must be a difference in the pre-processing of these two classes. For the Normal-class, which is the majority class, only the original, non-augmented images had been used. Whereas for the Viral Pneumonia-class, which is the class containing the least original images, a big number of augmented images had been used for training. 
+As a conclusion of these tests we also augmented the Normal-class, by using the original images plus one time augmented images which resulted in 13860 images for the Normal-class in the training dataset. For the training dataset the following number of images had been used: 
+\begin{itemize}
+\item 'Normal':  13860
+\item 'COVID':  14748
+\item 'Lung\_Opacity': 12264 
+\item 'Viral Pneumonia':  13725
+\end{itemize}
+As augmentation technique rotation (of maximum 15°) and translation (of maximum 10\%) had been used. 
+No augmentation has been done to the test and validation dataset. 
+Before starting the training a randomly data augmentation was applied to the training data
+\begin{itemize}
+\item HorizontalFlip(p=0.5)
+\item Rotate(limit=15, p=0.5)
+\item ShiftScaleRotate(shift\_limit=0.05, scale\_limit=0.05, rotate\_limit=0, p=0.5) 
+\end{itemize}
+
+As a last step the preprocesing function of the pretrained InceptionV3-model (inception\_v3.preprocess\_input) has been applied to train, test and validation set. This returns a preprocessed array with type float32. The input pixel values are scaled between -1 and 1, sample-wise. 
+
+During the different training runs different batch sizes have been tried out (16 and 64). 
+
+\paragraph{The InceptionV3 model}\mbox{}\\
+In some papers which handle similar tasks the InceptionV3 model was used. (e. g. „Can AI Help in Screening Viral and COVID-19 Pneumonia?“ from Muhammad E. H. Chowdhury et. al). In several sources in the internet it is mentioned that the InceptionV3 model „ensures a balance between performance and computational cost.” This is why we thought it could be worth to try using this model on our data. 
+
+The keras InceptionV3 is a pre-trained convolutional neural network that has 311 layers. It has been already trained on more than a million images from the ImageNet database. This pretrained network can classify images into 1000 object categories, such as keyboard, mouse, pencil, and many animals. As a result, the network has learned rich feature representations for a wide range of images. The network has an image input size of 299-by-299. 
+
+\paragraph{1st trial with InceptionV3}\mbox{}\\
+ToDo Yvonne
+
+\paragraph{2nd trial with InceptionV3}\mbox{}\\
+ToDo Yvonne
+\paragraph{3rd trial with InceptionV3}\mbox{}\\
+ToDo Yvonne
+\paragraph{4th trial with InceptionV3}\mbox{}\\
+ToDo Yvonne
+
+\subsubsection{DenseNet}
+
+
+\subsubsection{other pretrained models we tried}
 
 
 \section{Conclusion}
@@ -792,34 +845,5 @@ Overall Conclusion
 Which model performed best
 What worked, what did not work? Why?
 
-\section{Example include image and table - To be removed at the end}
-
-Put images you want to include to this report in the subfolder: figures\_report\_2 and use relative paths inside this report.
-Upload them on git aswell.
-
-\begin{figure}[ht] % the [h!] helps force it "here"
-    \centering
-    \includegraphics[width=1.0\linewidth]{../figures/figures_report_2/classes.png}
-    \caption{Examples of image}
-    \label{fig:example_image}
-\end{figure}
-
-Figure \ref{fig:example_image} shows ...
-
-
-\begin{table}[ht]
-    \centering
-    \begin{tabular}{|c|c|c|}
-        \hline
-        \textbf{X} & \textbf{Y} & \textbf{Z} \\ \hline
-        1 & 2 & 3 \\ \hline
-        4 & 5 &  \\ \hline \hline
-        6 &  & 7 \\ \hline
-    \end{tabular}
-    \caption{Example of table}
-    \label{tab:example_table}
-\end{table}
-
-Table \ref{tab:example_table} shows \dots
 
 \end{document}
