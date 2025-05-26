@@ -378,7 +378,7 @@ In conclusion , the Logistic Regression Model on hog features with Best C: 0.01 
 Room for Improvement: Logistic regression might not be the best choice for such a high-dimensional feature set. Therefore we next chose to experiment with other models like Support Vector Machines (SVM) and Random Forests, which could perform better without requiring dimensionality reduction.
 
 
-\begin{figure}[!ht] % the [h!] helps force it "here"
+\begin{figure}[H]
     \centering
     \includegraphics[width=1.0\linewidth]{logreg2,a,b,c.png}
     \caption{More Logistic Regression models A, B,C}
@@ -386,8 +386,91 @@ Room for Improvement: Logistic regression might not be the best choice for such 
 \end{figure}
 
 
-\subsubsection{Random Forst}
-\colorbox{yellow}{ToDO Alex}
+\subsubsection{Random Forest}
+The Random Forest model is an ensemble learning method that combines multiple decision trees to improve classification accuracy and robustness. It works by creating a multitude of decision trees during training and outputting the mode of their predictions (for classification tasks). 
+The main advantages of Random Forest include:
+\begin{itemize}
+    \item It handles high datasets with high-dimensional data well, making it suitable for image classification tasks.
+    \item Robustness to noise and overfitting, as it averages the predictions of multiple trees.
+    \item Paralellization, which allows for efficient use of computational resources.
+    \item Improved accuracy and reduced variance compared to individual decision trees.
+\end{itemize}
+The disadvantages of the model include:
+\begin{itemize}
+    \item It can be slower to train than simpler models like logistic regression, especially with large datasets.
+    \item It may not perform as well on very small datasets or when the number of features is much larger than the number of samples.
+    \item Training and prediction can be computationally expensive, especially with many trees or large datasets.
+    \item Imbalanced datasets may pose a challenge, as the model may favor the majority class.
+\end{itemize}
+\textbf{1st trial}: Random Forest with default hyperparameters:\\
+The first attempt at using the Random Forest model for our classification problem does not specify any hyperparameters. It uses the HOG features as inputs. The score obtained by this model is 0.7602173399480274
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{CM_RF_default.png}
+        \caption{Confusion Matrix}
+        \label{fig:confusion_rf}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{CR_RF_default.png}
+        \caption{Classification Report}
+        \label{fig:classification_rf}
+    \end{minipage}
+\end{figure}
+In the pictures above, the encoded labels are:
+\begin{itemize}
+    \item COVID: 0
+    \item Lung Opacity: 1
+    \item Normal: 2
+    \item Viral Pneumonia: 3
+\end{itemize}
+The result is better than the Logistic Regression Model. However, the f1 score for the COVID category is the lowest. We tried to improve this score by finding a proper set of hyperparameters. 
+
+\textbf{2nd trial}: Parameter optimization for Random Forest with GridsearchCV:\\
+We tried to optimize parameters using the HOG features as inputs, but the memory requirements and computing time were prohibitive. We chose to use to use the normalized, unmasked, non-filtered 20×20 images. 
+Best parameters found are:
+\begin{itemize}
+    \item class weight: balanced
+    \item max depth: 50
+    \item max features: log2
+    \item min samples leaf: 1
+    \item number of estimators: 300
+\end{itemize} 
+Best cross-validation score was  0.8406127980473902.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{GridSearchScore.png}
+    \caption{Grid Search Score}
+    \label{fig:GridSearchCV}
+\end{figure}
+
+\textbf{3rd trial}: Random Forest with optimal hyperparameters previously determined:\\
+Using the balanced class weight, the max depth 50, log2, 300 estimators and 1 min samples leaf, we generated a Random Forest Classifier and trained it with the HOG features. The results are shown below: 
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{CM_RF_opt.png}
+        \caption{Confusion Matrix}
+        \label{fig:confusion_rf}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{CR_RF_opt.png}
+        \caption{Classification Report}
+        \label{fig:classification_rf}
+    \end{minipage}
+\end{figure}
+
+The overall score is not better than the one obtained with default parameters. However, there is a small improvement in the f1 score for the COVID category.
+In conclusion, the Random Forest is not the optimal model to analyse COVID X-rays. 
 
 \subsubsection{Support Vector Machines (SVM)}
 There are two types of SVM models: linear and nonlinear SVM. Here's a brief summary of both: \\
