@@ -1112,6 +1112,77 @@ However the classification report and the confusion matrix in figure \ref{fig:in
   \label{fig:inceptionv3_10_results}
 \end{figure}
 
+
+\paragraph{8th trial with InceptionV3}\mbox{}\\
+As the accuracy of the previous test (7th trial) was quite promising, with the same setup another test has been done. The only change was, that this time the corresponding masks hade been apllied to the X-ray images. 
+Three tests were carried out.  These differed in that the masks were applied to different data sets. Masks were applied to:
+\begin{enumerate}
+\item the train dataset
+\item the train and validation dataset
+\item the train, validation and test dataset
+\end{enumerate}
+
+In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item SGD(learning\_rate=0.0001, momentum=0.9) optimizer
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item fine-tuning has been done: freeze only the first 249 layers and unfreeze the rest
+\item random augmentation to all classes 
+\item corresponding mask is applied to the X-ray image in the train dataset
+\end{itemize}
+
+The design of the used model is the same as in the previous test (7th trial, c.f. figure \ref{fig:inceptionv3_10.keras_model_design}.)
+
+When training the model with only masks attached to the training dataset the accuracy and loss does not converge at all, as figure \ref{fig:inceptionv3_11_loss_accuracy} shows. Therefore, the training has been redone with applied masks to the training and validation dataset. If you look at figure \ref{fig:inceptionv3_12_loss_accuracy}, this test looks very promising: The validation loss decreases and the validation accuracy increases. The oscillation of the training loss and accuracy is less than in other tests with the InceptionV3 model, especially in the later epochs there is less oscillation. 
+
+The classification report and the confusion matrix of the training and prediction with only masks applied to the training dataset (figure \ref{fig:inceptionv3_11_results}) show that this model is useless. The classification report and the confusion matrix of the second test (figure \ref{fig:inceptionv3_12_results}) show that the test where the masks have only been applied to the train and validation dataset is useless too. 
+The prediction using X-ray images with applied masks are the best option when using masks, figure \ref{fig:inceptionv3_13_results}. But the overall accuracy is only 84\% and also the COVID class is not very well predicted. This test is comparable to the 7th trial. The only difference is that masks have been added here. If we compare the results of the two predictions of these tests, we can conclude, that the model does better predictions without including the masks. In the 7th trial the overall accuracy was 91\% and even the COVID-class had a f1-score of 91\%, c.f figure \ref{fig:inceptionv3_10_results}.
+
+    
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_11_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 8th trial with InceptionV3. Masks applied to the training dataset.}
+    \label{fig:inceptionv3_11_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_12_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 8th trial with InceptionV3. Masks applied to the training and validation dataset.}
+    \label{fig:inceptionv3_12_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_11_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_11_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training dataset.}
+  \label{fig:inceptionv3_11_results}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_12_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_12_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training and validation dataset.}
+  \label{fig:inceptionv3_12_results}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_13_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_13_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training, validation and train dataset.}
+  \label{fig:inceptionv3_13_results}
+\end{figure}
+
 \subsubsection{DenseNet}
 
 
