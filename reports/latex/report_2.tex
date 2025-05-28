@@ -77,7 +77,8 @@ That is why the masks have been resized to 299x299 pixels.
 The masks have been converted into binary images. 
 
 \subsubsection{Combine masks with images:}
-Each of the so far processed images havs been combined with its corresponding mask. This has been done by using the function "bitwise\_and" of the cv2-library.\\
+
+Each of the so far processed images have been combined with its corresponding mask. This has been done by using the function "bitwise\_and" of the cv2-library.\\
    
 \subsubsection{Label encoding}
 Input: Class labels like "COVID", "Normal", "Lung Opacity", "Viral Pneumonia".\\
@@ -136,7 +137,7 @@ Output: Augmented images, which are variations of the original images, still of 
 Table \ref{tab:dataset_statistics} shows the number of images per class before augmentation, the number of augmentations per class which were applied and the
 final number of images in the train dataset. The final train dataset includes the preprocessed, non-augmented images plus the augmented images.\\
 Figure \ref{fig:aug_example_covid}, figure \ref{fig:aug_example_lung_opcacity} and figure \ref{fig:aug_example_viral_pn} show for each of the classes which needed 
-augmentation the non-augmented image and its augmentations. As the class COVID needed 2 augmentations (see \ref{tab:dataset_statistics}) figure \ref{fig:aug_example_covid} 
+augmentation the non-augmented image and its augmentations. As the class COVID needed 2 augmentations (see table \ref{tab:dataset_statistics}) figure \ref{fig:aug_example_covid} 
 shows 2 augmented images. 
 
 
@@ -188,7 +189,7 @@ HOG Captures from X-rays
 
 \begin{itemize}
      \item Edges of lung boundaries, rib cage, and lesions.
-     \item Orientation and distribution of densities — darker/lighter areas correspond to tissue and opacity differences.
+     \item Orientation and distribution of densities i.e. darker/lighter areas correspond to tissue and opacity differences.
      \item Shape and spread of abnormalities, like how diffuse or sharp an opacity is.
 \end{itemize}
 Although HOG is handcrafted, not learned  and  so it may miss subtle texture or high-level patterns, it is a fast, interpretable, and memory-efficient way to 
@@ -247,7 +248,8 @@ Operation: Evaluate the model's performance using metrics like accuracy, F1 scor
 image classes.\\
 Output: Evaluation metrics to show true vs predicted labels.
 
-There are also a number of hyperpramater tuning strategies, which we used in different modelling tests:
+
+There are also a number of hyperparamater tuning strategies, which we used in different modelling tests:
 \begin{itemize}
     \item GridSearchCV
     \item RandomizedSearchCV
@@ -301,14 +303,14 @@ We got an Accuracy: 58.04\%. The model made bad guesses, especially for Normal a
 \\
 \textbf{3rd trial}: Images without masks resized without filters (Figure \ref{fig:Logistic_Regression}C) we also fed the model same small images, but now the whole image is visible. This increased the accuracy to 69.24\%  and displayed a nice balance across all disease types.
 \\
-\begin{figure}[H] % the [h!] helps force it "here"
+\begin{figure}[H] %[ht] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{lr1,2,3.png}
     \caption{Logistic Regression models A, B, C}
     \label{fig:Logistic_Regression}
 \end{figure}
 \textbf{4th trial}:Random grid search + PCA (Figure \ref{fig:Logistic_Regression_logreg2} A)
-While running a GridSearch on HOG features, my system ran out of memory and crashed. To make the training more manageable, I switched to RandomizedSearchCV combined with PCA to reduce dimensionality.
+While running a GridSearch on HOG features, our system ran out of memory and crashed. To make the training more manageable, we switched to RandomizedSearchCV combined with PCA to reduce dimensionality.
 Here we used SAG (Stochastic Average Gradient) which is ideal for large datasets and when we want faster convergence of SGD without noisy updates. It works by iterating through the data in mini-batches. In each iteration, it computes the gradient (slope of the cost function) for each mini-batch, and averages them to update the parameters. Over time, this leads to more stable and faster convergence compared to regular SGD (Stochastic Gradient Descent). Also, for dimensionality reduction PCA was used which reduced features to 100 components.
 Using a random grid with PCA we improved the accuracy to 65.37\%, which is solid for logistic regression with HOG characteristics. The best parameters found were C = 0.075, penalty = L1. The PCA retained variance 62\% and showed a better precision-recall balance in COVID class.\\
 Class-wise performance: 
@@ -321,7 +323,7 @@ The accuracy drop may be because of the pca which we set to 100.
 
 \textbf{5th trials}: Gridsearch cv (Figure \ref{fig:Logistic_Regression_logreg2}B)
 We applied Grid Search on normalized, unmasked, non-filtered 20×20 images to obtain the best Params: C=0.1, penalty=L2 and an accuracy of 69.10\%.
-Logistic regression after hyperparameter tuning showed slight improvement in accuracy and confusion matrix and displayed a	similar class-wise performance to the base version. The raw HOG features might have contained valuable info that PCA compressed away in the previous model.
+Logistic regression after hyperparameter tuning showed slight improvement in accuracy and confusion matrix and displayed a similar class-wise performance to the base version. The raw HOG features might have contained valuable information that PCA compressed away in the previous model.
 \\
 \textbf{6th trial}:Manual Parameter Tuning using CuML on HOG features (Figure \ref{fig:Logistic_Regression_logreg2}C).
 We then revisited GridSearch with cuML on hog features, which is faster because it uses the GPU.
@@ -332,7 +334,7 @@ In this experiment, we trained a CuML Logistic Regression model using a subset o
 
 The classification report reveals that the model's recall is highest for the Normal (2) class (85\%)and Viral Pneumonia (3) (82\%), while the lowest recall is for COVID (0) (39\%). The precision and F1-scores also reflect this imbalance, with the model performing better on the more frequent classes.
 \\
-Summary:
+\underline{Summary}:
 \begin{itemize}
     \item HOG features yielded the best accuracy (~73.7\%) with strong recall on Pneumonia and COVID.
     \item Raw pixel features (even when resized) underperformed compared to HOG or PCA-based features.
@@ -485,7 +487,7 @@ The best hyperparameter set was: C = 10,  gamma = 0.001 and kernel = rbf. The ru
 \ref{fig:SVC_2000_20x20_grid}a shows that the model has an overall accuracy of 65\%, but the prediction of class 0 (COVID) is very poor with a f1-score of only 0.29. The "normal" class could be best 
 predicted which can also be seen on the confusion matrix in figure \ref{fig:SVC_2000_20x20_grid}b.
 
-\begin{figure}[!ht]
+\begin{figure}%[ht] % the [h!] helps force it "here"
   \centering
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{SVC_grid_20_mask_slice2000_cf_report.png}}%
   \qquad
@@ -628,7 +630,7 @@ only 57\%.
 \end{figure}
 
 \textbf{4th trial} - XGBoost (128 x 128, all images, without masks, no filter (Clahe, Gaussian Blur))\\
-As a next step we tried to stick to use a big number of images and used all images inclduing the augmented images as input data. The images have been normalized but
+As a next step we tried to stick to use a big number of images and used all images including the augmented images as input data. The images have been normalized but
 no filters and masks were applied. \\
 The classification report in figure \ref{fig:XGBost_classifier_method_128_nomask_nofilter}a and the confusion matrix in figure 
 \ref{fig:XGBost_classifier_method_128_nomask_nofilter}b show that this model has an overall accuracy of 86\% which is the best accuracy of all XGBoost models we 
@@ -673,28 +675,31 @@ In the next trial we improved this further by making improvements to the model a
 \textbf{2nd trial}\\
 We increased the number of layers/neurons to make deeper network (Sequential layers: 1024, 512, 256)
 and performed BatchNormalization before activations for more stable training, implemented EarlyStopping + ReduceLROnPlateau for smarter training.
-The overall accuracy of this model was 76.99 \%, which is a notable boost from previous models. However, COVID (0) is still the weakest class (59\% precision and recall), indicating the model struggles with it — possibly due to class imbalance or feature overlap. Lung Opacity (1) shows consistent, decent performance (75\% recall). Normal (2) displayed the strongest precision (85\%) and recall (82\%), showing good separability. Viral Pneumonia (3) displayed excellent recall (96\%) as it had very few false negatives.\\
+The overall accuracy of this model was 76.99 \%, which is a notable boost from previous models. However, COVID (0) is still the weakest class (59\% precision and recall), indicating that the model struggles with it, possibly due to class imbalance or feature overlap. Lung opacity (1) shows decent consistent performance (75\% recall). Normal (2) displayed the strongest precision (85\%) and recall (82\%), showing good separability. Viral pneumonia (3) showed excellent recall (96\%) as it had very few false negatives.\\
 
 \textbf{3rd trial}\\
+
 The next trial  we tried an updated MLP classifier with an edition of Class weights to Boost minority class (COVID) explicitly, and activation function Leaky Relu to avoid dead neurons, in addition to previous additions. The key changes made were:
+
  \begin{itemize}
-     \item LeakyReLU with alpha=0.1 helps mitigate dead neurons by allowing a small gradient when the input is negative.
+     \item LeakyReLU with alpha=0.1 helps mitigate dead neurons by allowing a small gradient when input is negative.
      \item Dropout with rates of 50\% after the first layer and 30\% after the second layer helps prevent overfitting by randomly dropping out neurons during training.
      \item Adam optimizer with a smaller learning rate (0.0005) to help avoid overshooting the minima during training.
      \item Class weights are computed to handle class imbalance (especially important for class 0 - COVID).
-     \item Batch Normalization is included after each layer to stabilize the learning process
+     \item Batch normalization is included after each layer to stabilize the learning process.
 \end{itemize}
-The accuracy is now 0.7817, which is a noticeable improvement from the previous attempts. Looking at the confusion matrix, we can observe: Class 0 (COVID) has lower precision and recall than the other classes. This could mean our model is having difficulty distinguishing between COVID and other classes (maybe due to class imbalance). Classes 1 (Lung Opacity), 2 (Normal), and 3 (Viral Pneumonia) are being classified well, with high F1-scores and balanced precision and recall.\\
+The accuracy is now 0.7817, which is a noticeable improvement from the previous attempts. Looking at the confusion matrix, we can observe the following. Class 0 (COVID) has lower precision and recall than the other classes. This could mean our model is having difficulty distinguishing between COVID and other classes (maybe due to class imbalance). Classes 1 (Lung Opacity), 2 (Normal), and 3 (Viral Pneumonia) are being classified well, with high F1-scores and balanced precision and recall.\\
 
 \textbf{4th trial}\\
-In this model we appliesd SMOTE to help balance the class distribution by generating synthetic samples for the minority classes (Class 0 - COVID), which can help the model learn better representations for those classes.We later scaled the resampled features using 50 epochs, Smaller batch size (32), early stopping, to prevent overfitting, and trained the model on the new balanced data (without class weights). Although the model gave consistent ~77.7–78\% accuracy, we observed good precision and recall for class 2 and 3 however class 0 is still underperforming.\\
+In this model we applied SMOTE to help balance the class distribution by generating synthetic samples for the minority classes (Class 0 - COVID), which can help the model learn better representations for those classes. We later scaled the resampled features using 50 epochs, Smaller batch size (32), early stopping, to prevent overfitting, and trained the model on the new balanced data (without class weights). Although the model gave consistent ~77.7–78\% accuracy, we observed good precision and recall for class 2 and 3 however class 0 is still underperforming.\\
 
 \textbf{5th trial}\\
-In this model we tried focal loss which is particularly useful when we're dealing with class imbalance, as it puts more focus on hard-to-classify examples.We used a gamma of 2.0 and alpha of 0.25 — good defaults based on the original focal loss paper. Class 0 is still underperforming slightly (precision = 0.60, recall = 0.58), meaning it's being confused with other classes. This is likely due to it having fewer or noisier samples or its features overlapping with class 1.Class 2 and 3 are performing very well, especially class 3 (recall = 0.93) — so the model is confidently identifying these.\\
+In this model we tried focal loss which is particularly useful when we're dealing with class imbalance, as it puts more focus on hard-to-classify examples. We used a gamma of 2.0 and alpha of 0.25 — good defaults based on the original focal loss paper. Class 0 is still underperforming slightly (precision = 0.60, recall = 0.58), meaning it's being confused with other classes. This is likely due to it having fewer or noisier samples or its features overlapping with class 1. Class 2 and 3 are performing very well, especially class 3 (recall = 0.93) — so the model is confidently identifying these.\\
 
 \textbf{6th trial}\\
-We next tried MLP on ResNet features.ResNet (Residual Networks) is a deep convolutional neural network pretrained on ImageNet.It learns hierarchical, high-level features (like textures, shapes, patterns) that are often more effective than handcrafted ones.Extracting features from a pretrained ResNet and feeding them into a simple MLP can boost performance, especially for medical images.
-The model performed very well with an overall Accuracy of 82.8\%, COVID Recall: 69\%, Lung Opacity Recall: 78\%,    Normal Recall: 89\%,Pneumonia Recall: 94\%.This matrix shows that:Normal and Pneumonia classes are classified with high confidence. COVID and Lung Opacity occasionally get confused with each other and with Normal.
+We next tried MLP on ResNet features. ResNet (Residual Networks) is a deep convolutional neural network pretrained on ImageNet.It learns hierarchical, high-level features (like textures, shapes, patterns) that are often more effective than handcrafted ones. Extracting features from a pretrained ResNet and feeding them into a simple MLP can boost performance, especially for medical images.
+The model performed very well with an overall accuracy of 82.8\%, COVID Recall: 69\%, Lung Opacity Recall: 78\%, Normal Recall: 89\%, Pneumonia Recall: 94\%.This matrix shows that Normal and Pneumonia classes are classified with high confidence. COVID and Lung Opacity occasionally get confused with each other and with Normal.
+
 Our current results are strong enough that it makes perfect sense to move to deep learning or CNN-based models next.
 \begin{figure}[ht] % the [h!] helps force it "here"
     \centering
@@ -702,10 +707,11 @@ Our current results are strong enough that it makes perfect sense to move to dee
     \caption{MLP CLASSIFIER A, B, C}
     \label{fig:MLP_CLASSIFIER}
 \end{figure}
-We wanted to see how the MLP classifier model was learning our data anad so we decided to plot the accuracy and loss per epochs for the first trial and the last (figure \ref{fig:MLP_CLASSIFIER_compare}). On analysis of figure \ref{fig:MLP_CLASSIFIER_compare}a (20 epochs) we found training Loss decreases steadily suggesting the model is learning from the training data.
+We wanted to see how the MLP classifier model was learning our data anad so we decided to plot the accuracy and loss per epochs for the first trial and the last (figure \ref{fig:MLP_CLASSIFIER_compare}). On analysis of figure \ref{fig:MLP_CLASSIFIER_compare}a (20 epochs) we found training loss decreases steadily suggesting the model is learning from the training data.
 The Validation Loss Plateaus and then increases after epoch ~6–7 which suggests overfitting.The model training Accuracy rises to ~0.95 which is excellent however the validation Accuracy flatlines around 0.83–0.84 which showed that the model is not improving on unseen data.
 Figure \ref{fig:MLP_CLASSIFIER_compare}b (8 epochs) showed a similar trend, just shorter duration. We obeserved still a gap between training and validation performance (train ~0.93 vs val ~0.83).The validation loss increases even earlier suggesting overfitting happens faster.\\
-These resulsts show that Resnet features wrok well and MLP learns effectively on the training data.However, we observe overfitting whih needs to be fixed.\\
+These resulsts show that Resnet features wrok well and MLP learns effectively on the training data. However, we observe overfitting whih needs to be fixed.\\
+
 \textbf{7th trial}\\
 To address this we next try to add L2 regularization to Dense layers that helps reduce overfitting by penalizing large weights, increase dropout slightly (0.4) that increases regularization by randomly dropping neurons during training and use early stopping that avoids overfitting by halting training when the model stops improving on validation data.We also try reducing the number of neurons (e.g., 256 → 128 → 64) to avoid overfitting and consider adding BatchNormalization after dense layers.
 \begin{figure}[ht] % the [h!] helps force it "here"
@@ -723,7 +729,7 @@ Class 1: Also good (F1 = 0.72).
 Class 0: Weaker (F1 = 0.56), possibly due to overlapping features.
 Class 3: Interesting — high recall (0.98) but lower precision, suggesting the model predicts this class a lot, possibly overgeneralizing to it.\\
 \\
-In conclusion, MLP Classifier on ResNet Features gave us the best accuracy(82\%).Since class 0 still remians a probelm moving to a Convolutional Neural Network (CNN) is the logical next step, since were working with image data (X-rays), and traditional ML models like SVMs or MLPs (even with augmentation and tuning) may struggle to capture spatial hierarchies and localized patterns critical for medical imaging.\\
+In conclusion, MLP Classifier on ResNet Features gave us the best accuracy(82\%). Since class 0 still remians a problem moving to a Convolutional Neural Network (CNN) is the logical next step, since were working with image data (X-rays), and traditional ML models like SVMs or MLPs (even with augmentation and tuning) may struggle to capture spatial hierarchies and localized patterns critical for medical imaging.\\
 
 \section{Deep Learning}
 
@@ -739,9 +745,9 @@ For some models we wanted to visualize which areas of an image contribute most t
 With X-ray images, CNNs are still very strong, but transformers can outperform them.
 We built a CNN model for image classification, with three convolutional blocks for feature extraction, followed by pooling, dense layers for classification, and dropout for regularization.
 \paragraph{Data pre-processing for CNN}\mbox{}\\
-The data preparation for training the CNN model on the COVID-19 Radiography Database involved several steps. First, the dataset was downloaded from Kaggle using the Kaggle API and extracted. This dataset contains chest X-ray images categorized into four classes: Normal, COVID, Lung\_Opacity, and Viral Pneumonia. Each class folder includes both the raw images and corresponding segmentation masks highlighting lung regions. The data was then split into training and testing sets using an 85:15 ratio, ensuring that both images and their associated masks were kept aligned. These were organized into a structured directory format under separate folders for training and testing data, with further subdivisions by class and file type (images or masks).
+The data preparation for training the CNN model on the COVID-19 Radiography Database involved several steps. First, the dataset was downloaded from Kaggle using the Kaggle API and extracted. This dataset contains chest X-ray images categorized into four classes in the given order: Normal, COVID, Lung\_Opacity, and Viral Pneumonia. Each class folder includes both the raw images and corresponding segmentation masks highlighting lung regions. The data was then split into training and testing sets using an 85:15 ratio, ensuring that both images and their associated masks were kept aligned. These were organized into a structured directory format under separate folders for training and testing data, with further subdivisions by class and file type (images or masks).
 
-For model input preparation, both images and masks were resized to 224×224 pixels. Each grayscale image was normalized to a [0, 1] range and then multiplied pixel-wise with its mask to retain only the lung regions, effectively focusing the model’s attention. The processed grayscale image was duplicated across three channels (to match expected RGB input format), and the mask was added as a fourth channel—resulting in a 4-channel input tensor. Data augmentation, using the Albumentations library, was selectively applied to minority classes (those with fewer samples) to mitigate class imbalance. These augmentations included horizontal flips, small rotations, shifts, and scaling.
+For model input preparation, both images and masks were resized to 224×224 pixels. Each grayscale image was normalized to a [0, 1] range and then multiplied pixel-wise with its mask to retain only the lung regions, effectively focusing the model’s attention. The processed grayscale image was duplicated across three channels (to match expected RGB input format), and the mask was added as a fourth channel—resulting in a 4-channel input tensor. Data augmentation, using the Albumentations library, was selectively applied to minority classes (those with images < Mean) to mitigate class imbalance. These augmentations included horizontal flips, small rotations, shifts, and scaling.
 
 Finally, the processed data was loaded into TensorFlow datasets using a generator-based pipeline, yielding batches of 4-channel images with their corresponding class labels. These datasets were shuffled, batched, and prefetched to ensure efficient training. This pipeline ensured that the model could learn not only from image features but also leverage the spatial context provided by lung masks, thereby improving classification accuracy on chest X-rays.
 
@@ -772,9 +778,10 @@ Figure \ref{fig:model_cnnmask1.keras.png} shows the architecture of our model
     \item Conv Block 1: Conv2D (32 filters, 3x3, padding='same')learns low-level features (edges, blobs), BatchNormalization normalizes activations to stabilize and speed up training, Activation (ReLU) adds non-linearity.MaxPooling2D (2x2)downsamples feature maps (reduces spatial resolution).
     \item Conv Block 2:Conv2D (64 filters, 3x3, padding='same')learns more complex patterns, BatchNormalization, Activation (ReLU), MaxPooling2D (2x2)
     \item Conv Block 3:	Conv2D (128 filters, 3x3, padding='same')for even deeper features, BatchNormalization,	Activation (ReLU), MaxPooling2D (2x2)
-    \item GlobalAveragePooling2D: Converts the spatial feature map into a 1D feature vector by averaging, Reduces parameters before entering dense layers,	Helps avoid overfitting and makes model more robust.
+    \item GlobalAveragePooling2D: Converts the spatial feature map into a 1D feature vector by averaging, reduces parameters before entering dense layers,	helps avoid overfitting and makes model more robust.
     \item Dense Layers (Fully Connected): Dense (256 units, ReLU), First FC layer with ReLU for learning abstract combinations of features, Dropout (rate=0.3) for Regularization to prevent overfitting, Dense (128 units, ReLU) for Smaller FC layer,	Dropout (rate=0.3) again helps generalize better.
-    \item Output Layer:Dense (4 units, Softmax)Final output layer with 4 units = 4 classes, Softmax gives probability distribution over the classes.
+    \item Output Layer: Dense (4 units, Softmax)Final output layer with 4 units = 4 classes, Softmax gives probability distribution over the classes.
+
 \end{itemize}
 
 
@@ -804,7 +811,7 @@ In our model we used a fully connected Deep Neural Network (DNN) classifier.
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{vgg16_model1.keras(1).png}
-    \caption{CNN Results}
+    \caption{VGG16 model architecture}
     \label{fig:vgg16offlinemodel.png}
 \end{figure}
 In this workflow, figure \ref{fig:vgg16offlinemodel.png}., we utilize a hybrid deep learning approach by leveraging pretrained VGG16 features for efficient image classification. First, grayscale medical images are converted to RGB, resized to 224×224, and passed through the VGG16 model (with include\_top=False and global average pooling) to extract compact 512-dimensional feature vectors. These features are precomputed and saved for training, validation, and testing datasets. Instead of retraining the entire VGG16 model, we then build a lightweight, fully connected neural network that takes these feature vectors as input. The classifier consists of dense layers with ReLU activation, batch normalization, dropout for regularization, and a final softmax layer to predict one of four classes. Additionally, input features are standardized using StandardScaler to improve training stability.
@@ -821,6 +828,7 @@ This trial model gave us an accuracy of 77\% (figure \ref{fig:vgg16offlineresult
 \paragraph{Data pre-processing for CNN}\mbox{}\\
  For this grayscale chest X-ray images are first organized and preprocessed effectively. The dataset is split into training and validation sets class-wise (Normal, COVID, Lung Opacity, Viral Pneumonia) with corresponding segmentation masks, and further balanced using data augmentation. Each image is converted from grayscale to RGB format by stacking the single channel, resized to 224×224, and normalized to the [0,1] range to match the input format expected by VGG16. Augmentations like horizontal flipping, rotation, and scale-shifting are selectively applied to minority classes to mitigate class imbalance. A custom TensorFlow tf.data.Dataset pipeline efficiently streams the data in batches with prefetching for GPU acceleration, allowing VGG16 to learn meaningful features directly from image batches without prior feature extraction. This preparation ensures the model benefits from both the pretrained representations of VGG16 and the robustness offered by dynamic, on-the-fly data augmentation.
 Figure \ref{fig:vgg16augmentations.png} shows a batch we visualized to ensure only minority class images are augmentated.
+
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{vgg16augmentations.png}
@@ -828,6 +836,7 @@ Figure \ref{fig:vgg16augmentations.png} shows a batch we visualized to ensure on
     \label{fig:vgg16augmentations.png}
 \end{figure}
 \paragraph{Model preparation}\mbox{}\\
+
 In this trial, an online feature extraction approach was implemented using the pretrained VGG16 model from the ImageNet dataset. The convolutional base of VGG16 was used as a fixed feature extractor by freezing its layers (`trainable = False`), allowing only the custom classification head to be trained. The input images, resized to 224×224×3, were passed through the VGG16 base, followed by a classification head composed of a `GlobalAveragePooling2D` layer, two fully connected (`Dense`) layers with ReLU activations, and `Dropout` layers to reduce overfitting. The final output layer used a softmax activation to predict one of four target classes. The model was compiled with the Adam optimizer and trained for 5 epochs using sparse categorical crossentropy as the loss function. The training utilized TensorFlow data generators created from the augmented dataset, with training and validation steps computed based on the batch size and dataset size. This setup allowed end-to-end learning of high-level features while leveraging the robustness of pretrained weights.
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
@@ -845,12 +854,16 @@ To enhance the performance of the VGG16-based classifier, we transitioned from u
     \caption{Results for third trial using VGG 16 (unfreeze last 4)}
     \label{fig:vgg16result2.png}
 \end{figure}
+
 Figure \ref{fig:vgg16result2.png} shows after unfreezing the last few layers of the VGG16 base and applying targeted training refinements, the model achieved a high overall accuracy of 88\% on the test set. Looking at the per-class performance, the model demonstrated strong precision and recall for the Normal class (precision: 0.89, recall: 0.93, F1-score: 0.91), indicating consistent detection of healthy chest images.
 Performance on the COVID class improved significantly in terms of precision (0.99), suggesting the model made very few false-positive COVID predictions. However, its recall was 0.76, meaning some true COVID cases were missed — this trade-off indicates a cautious approach by the model, favoring certainty in predictions.
 For Lung Opacity, the model achieved balanced and high recall (0.91) and F1-score (0.85), reflecting strong sensitivity and robustness in capturing these cases. Viral Pneumonia predictions also improved, with a precision of 0.98 and F1-score of 0.86, although recall remained moderate (0.76), suggesting occasional under-detection.
 The macro average F1-score of 0.87 shows that performance is fairly balanced across all classes, despite class imbalance. The weighted average F1-score of 0.88 further confirms strong performance, especially considering that some classes (like Normal and Lung Opacity) dominate the dataset.
 Overall, these results indicate that fine-tuning VGG16 on the task has substantially improved class-wise prediction quality, especially in complex or overlapping cases like Lung Opacity and Viral Pneumonia.
+
 \paragraph{Fourth Trial: Fine-tuning VGG16 Transfer Model: Unfreeze last 8 layers}\mbox{}\\
+
+
 In this trial several key architectural and training improvements were implemented to enhance the model's generalization and fine-tuning capabilities (figure:\ref{fig:vgg16result3.png}).
 \begin{itemize}
     \item Deeper Fine-Tuning: Instead of unfreezing just the last 4 layers, this version unfreezes the last 8 convolutional layers of VGG16. This gives the model more capacity to adapt the pretrained filters to our specific domain (medical X-ray images), improving learning flexibility.
@@ -876,8 +889,11 @@ This model achieved significantly improved classification performance with an ov
     \includegraphics[width=1.0\linewidth]{vgg16-8.png}
     \caption{Results for fourth trial using VGG 16 (unfreeze 8 layers)}
     \label{fig:vgg16result4.png}
-\end{figure}
+
+
 \paragraph{Fifth Trial: Fine-tuning VGG16 Transfer Model: Unfreeze last 15 layers}\mbox{}\\
+
+>>>>>>> cf369b4 ( added conlusion to report)
 In this final modification (figure:\ref{fig:vgg16result5.png}), the model was further refined by unfreezing the last 15 convolutional layers of the VGG16 backbone, allowing for deeper fine-tuning and greater adaptability to the specific patterns present in chest X-ray images. This marks a significant shift from earlier stages, where only a few top layers were trainable, as it enables the model to move beyond generic ImageNet features and learn more domain-specific representations. The classification head remained consistent, comprising global average pooling followed by two dense layers with dropout for regularization, culminating in a softmax layer that outputs predictions for the four target classes. To ensure stable and controlled updates during fine-tuning, the model was compiled with a low learning rate of 1e-5 using the Adam optimizer. Additionally, callbacks such as early stopping and learning rate reduction were used to prevent overfitting and encourage efficient convergence. The model checkpoint callback was configured to monitor validation accuracy instead of loss, ensuring that the version of the model with the best classification performance was preserved. These enhancements collectively aimed to boost the model's ability to generalize and perform reliably across all classes, particularly the challenging ones like COVID-19 and Viral Pneumonia.
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
@@ -885,10 +901,12 @@ In this final modification (figure:\ref{fig:vgg16result5.png}), the model was fu
     \caption{Results for fourth trial using VGG 16 (unfreeze 15 layers)}
     \label{fig:vgg16result5.png}
 \end{figure}
+
 The results from the final model, where the last 15 layers of VGG16 were unfrozen for fine-tuning, show a strong overall performance with an accuracy of 90\% and a weighted F1-score of 0.90 across the four classes. Precision remained high for all classes, particularly for Viral Pneumonia, which achieved perfect precision (1.00), though its recall dropped significantly to 0.65, indicating many false negatives. Normal and Lung\_Opacity classes were predicted with high consistency, achieving F1-scores of 0.92 and 0.88 respectively. 
 However, compared to the previous model where only the last 8 layers were unfrozen, this result did not show a clear improvement. In fact, the 8-layer fine-tuned model had higher recall and F1-scores for most classes, suggesting better generalization and balance across the dataset. The drop in recall for *Viral Pneumonia* in this attempt, despite the higher model flexibility, points to possible overfitting or instability due to too many trainable parameters. This outcome highlights that more aggressive fine-tuning does not always guarantee better performance and that a well-calibrated balance between fixed and trainable layers often yields the most robust results.
 
 \paragraph{Sixth Trial: Fine-tuning VGG16 Transfer Model:SE block}\mbox{}\\
+
 This code introduces an advanced variation of the VGG16-based classification model by incorporating a **Squeeze-and-Excitation (SE) block**, a well-known attention mechanism designed to enhance feature representations. The SE block is applied after the last convolutional layer of the VGG16 model (`block5\_conv3`). Its role is to recalibrate the channel-wise feature responses by learning per-channel weights, thus emphasizing informative features while suppressing less useful ones. This refinement helps the model focus on critical parts of the image, which is particularly valuable in medical image analysis like chest X-rays.
 
 After inserting the SE block, the model continues with a classification head composed of global average pooling, two fully connected (Dense) layers with dropout regularization, and a final softmax layer to predict one of the four target classes. The model is partially fine-tuned by unfreezing the last 15 layers, allowing deeper adaptation to the target domain while retaining most of the pretrained weights from ImageNet to avoid overfitting.
@@ -909,9 +927,11 @@ However, these gains are not significantly higher than those achieved with fewer
 This suggests that while adding attention mechanisms like SE blocks and unfreezing more layers may enhance the model’s feature learning capacity, the benefit plateaus beyond a certain point, especially when earlier configurations were already well-optimized. In essence, the model’s performance has stabilized, and further architectural complexity or layer unfreezing yields diminishing returns in terms of classification accuracy.
 
 \subsubsection{EfficientNet}
+)
 The performance of the EfficientNet model on the multi-class classification task revealed varied effectiveness across different categories. The model achieved the highest precision and recall for the Normal class, with a precision of 0.61 and recall of 0.88, resulting in a solid F1-score of 0.72, indicating reliable identification of normal cases. However, the COVID class suffered from poor recall (0.07) and low precision (0.28), yielding a very weak F1-score of 0.11, which suggested significant difficulty in correctly detecting COVID cases. Similarly, Lung Opacity showed moderate performance with balanced precision and recall around 0.54 and 0.50 respectively, leading to an F1-score of 0.52. The Viral Pneumonia class performed the worst, with zero precision, recall, and F1-score, indicating that the model failed to correctly identify any instances of this category. Overall, the model attained an accuracy of 58\%, but the macro average metrics are low (precision, recall, and F1-score all around 0.34), reflecting poor generalization across all classes. Given the low recall and F1-scores for these critical classes, we decided not to move forward with this model and instead explored other approaches to improve classification performance.
 
 \subsubsection{InceptionV3}
+
 \paragraph{Data pre-processing for InceptionV3 model}\mbox{}\\
 In order to make it easier to make changes in the input data, we decided that the processing of the input data should not be done offline before the modelling, but instead doing on the fly before starting to train the model. 
 The data has been split into train data (85\%) and test data (15\%). Then the train data has been re-split into the final train data (80\%) and validation data (20\%) which is used for validation during training the model. 
@@ -989,7 +1009,7 @@ The loss and accuracy per epoch in figure \ref{fig:inceptionv3_04_loss_accuracy}
 
 
 \paragraph{2nd trial with InceptionV3}\mbox{}\\
-For this 2nd trial the same settings were used than in the 1st trial, but this time callbacks have been used. As the model did not converge within 10 epochs we tried to double the number of epochs for this trial. In summary the following settings were used: 
+For this 2nd trial the same settings were used as in the 1st trial, but this time callbacks have been used. As the model did not converge within 10 epochs we tried to double the number of epochs for this trial. In summary, the following settings were used: 
 \begin{itemize}
 \item input data as described above
 \item batch size = 16
@@ -1027,7 +1047,7 @@ The classification report and the confusion matrix in figure \ref{fig:inceptionv
 \end{figure}
 
 \paragraph{3rd trial with InceptionV3}\mbox{}\\
-For this 3rd trial the same settings were used than in the 2nd trial, but this time the batch size was increased from 16 to 64. In summary the following settings were used: 
+For this 3rd trial the same settings were used as in the 2nd trial, but this time the batch size was increased from 16 to 64. In summary, the following settings were used: 
 \begin{itemize}
 \item input data as described above
 \item batch size = 64
@@ -1110,7 +1130,9 @@ Although the stability of the model looks slightly better, the classification re
 
 \paragraph{5th trial with InceptionV3}\mbox{}\\
 
-For this 5th trial the same settings were used than in the 4th trial, but this time another optimizer has been used: RMSprop instead of Adam. The learning rate 1e-05 was not changed. 
+
+For this 5th trial the same settings were used as in the 4th trial, but this time another optimizer has been used: RMSprop instead of Adam. The learning rate 1e-05 was not changed. 
+
 In summary the following settings were used: 
 \begin{itemize}
 \item input data as described above
@@ -1193,7 +1215,7 @@ The classification report and the confusion matrix in figure \ref{fig:inceptionv
 
 \paragraph{7th trial with InceptionV3}\mbox{}\\
 
-The InceptionV3 has 311 layers. For this 7th trial we tried to unfreeze a lot more layers of the pretrained base model. As an example from https://keras.io/api/applications/ we chose to retrain the top 2 inception blocks, i.e. we will freeze the first 249 layers and unfreeze the rest. As recommended in that example we used the SGD(learning\_rate=0.0001, momentum=0.9) optimizer to compile the model. In summary the following settings were used: 
+The InceptionV3 has 311 layers. For this 7th trial we tried to unfreeze a lot more layers of the pretrained base model. As an example from https://keras.io/api/applications/ we chose to retrain the top 2 inception blocks, i.e. we will freeze the first 249 layers and unfreeze the rest. As recommended in that example we used the SGD(learning\_rate=0.0001, momentum=0.9) optimizer to compile the model. In summary, the following settings were used: 
 \begin{itemize}
 \item input data as described above
 \item batch size = 64
@@ -1334,9 +1356,39 @@ ToDo: Alex Input your results here
 
 
 \section{Conclusion}
-Todo: "Scientific and business conclusions based on the success or failure of the modeling." \\
 
-Which model performed best? Which model do we chose as a conclusion of all our tests? \\
-Can that model be used? Is it reliable enough? Do we have optimization proposals? \\
+\subsection{VGG16 Grad-CAM Grid}
+\begin{itemize}
+    \item \textbf{Focus Areas:} Heatmaps reveal dispersed and inconsistent attention. While some activations align with lung fields, many highlight irrelevant regions such as edges or corners, suggesting overfitting or sensitivity to non-diagnostic artifacts.
+    \item \textbf{Strengths:} Certain images demonstrate reasonable focus on areas potentially indicating pathology (e.g., lung opacity).
+    \item \textbf{Weaknesses:} Inconsistent attention and activation outside the lung fields reduce clinical interpretability and trust.
+\end{itemize}
+
+\subsection{Custom CNN Conv2D Grad-CAM Grid}
+\begin{itemize}
+    \item \textbf{Focus Areas:} Shows consistent, localized activation on the lung zones—particularly the perihilar and lower lobes.
+    \item \textbf{Interpretability:} More clinically meaningful focus with minimal noise suggests effective learning of disease-relevant features.
+    \item \textbf{Weaknesses:} A few activations remain near image borders, though less frequent compared to VGG16.
+\end{itemize}
+
+\vspace{1em}
+The Grad-CAM visualizations provide valuable insight into model behavior. While both models perform classification tasks, the custom CNN displays more anatomically grounded and clinically interpretable attention patterns. Its focus on relevant lung regions suggests stronger feature learning for COVID-19-related abnormalities.
+
+By contrast, VGG16, despite potentially competitive accuracy, shows evidence of overfitting and reliance on spurious cues, reducing its reliability in real-world clinical settings. These findings highlight the importance of not only performance metrics but also interpretability when evaluating models for medical applications.
+
+
+\subsection*{Future Perspectives and Recommendations}
+
+While the current Grad-CAM visualizations provide some interpretability into the model decisions, the results—particularly for the VGG16 transfer learning model—are not fully satisfactory. The heatmaps frequently highlight non-relevant regions, suggesting that the model may not be learning sufficiently robust or clinically grounded features. This could be due to limited fine-tuning, insufficient domain-specific adaptation, or reliance on spurious image artifacts.
+
+To improve this, future work could explore re-training the VGG16 model on pre-segmented or masked lung regions, thereby reducing background noise and guiding the model’s attention toward anatomically relevant structures. Given more computational resources and training time, such an approach may significantly enhance the quality and reliability of the learned features.
+
+Similarly, the custom CNN model shows promise in localizing disease-relevant regions, but its predictive performance remains modest. Increasing its depth by adding more convolutional layers, residual connections, or attention mechanisms could improve both feature extraction and generalization. Additional enhancements could involve data augmentation strategies, ensemble techniques, or integration of domain knowledge (e.g., lung region priors) to improve both classification accuracy and interpretability.
+
+In summary, while the current models offer valuable insights, their diagnostic reliability and focus can be further strengthened through better data preprocessing, architectural improvements, and extended training—especially in resource-rich environments.
+
+
+
+
 
 \end{document}
