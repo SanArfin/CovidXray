@@ -29,13 +29,17 @@
 
 \section{Introduction}
 
-\begin{itemize}
-    \item \colorbox{yellow}{What kind of machine learning problem is your project like? (classification of images with 4 classes}
-    \item \colorbox{yellow}{We first tried to solve the problem by using several machine learning methods}
-    \item \colorbox{yellow}{Then tried Deep learning, DNNs, transfer laerning, ...}
-    \item \colorbox{yellow}{What task does your project relate to? (fraud detection, facial recognition, sentiment analysis, etc)?}
-    \item ...
-\end{itemize}
+We have approx. 21000 chest X-ray images as a database. These belong to 4 different classes (COVID, Lung Opacity, Normal and Viral Pneumonia). All images are labeled. Our task is to try out different models to determine which of the 4 classes the image belongs to based on these X-ray images. Therefore, the problem is a classification task and it is supervised learning. 
+
+Before we started modeling, we analyzed the data extensively. This work is described in the first report of this project: "First\_report.Covid\_xray.pdf".
+
+To solve this classification task, we first tried out various machine learning models that can be used for classification. 
+These were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. 
+For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out.
+
+As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used self-build lightweight Convolutional Networks (CNN) and LeNet. On the other hand, we applied transfer learning. Therefore the following pre-trained models from KERAS were used: VGG16, InceptionV3 and DenseNet121. We tried to apply these models with and without fine-tuning to our data. 
+
+Since our local computers were no longer sufficient for these deep learning tasks, we performed these calculations on Google Colab. The work and tests with the deep learning models have shown that a different type of data preparation was necessary for this modeling. 
 
 \section{Machine Learning}
 
@@ -769,13 +773,13 @@ In conclusion, MLP Classifier on ResNet Features gave us the best accuracy(82\%)
 When trying to train different deep learning models, we figured out that we had to play around with the data. We tried different pre-preprocessing steps for the different models. Therefore, the different pre-processing steps are described in the respective chapters of the deep learning models.
 
 \subsection{Metrics to Evaluate the Model Results}
-For the evaluation of the results of the deep learning models, we used the same methods (modelling report, confusion matrix) as for the evaluation of the meachine learning models, c.f. section \ref{metrics_ML}. \\
-Additionally we analyzed how the accuracy and the loss evolved over the different epochs. \\
+For the evaluation of the results of the deep learning models, we used the same methods (classification report, confusion matrix) as for the evaluation of the machine learning models, c.f. section \ref{metrics_ML}. \\
+Additionally, we analysed how the accuracy and the loss evolved over the different epochs. \\
 
-For some models we wanted to visualize which areas of an image contribute most to a model's decision. Therefore we used Grad-CAM whether the model is paying attention to relevant anatomical features in the X-ray images.
+For some models we wanted to visualize which areas of an image contribute most to a model's decision. Therefore, we used Grad-CAM whether the model is paying attention to relevant anatomical features in the X-ray images.
 
 \subsection{CNN models and results - without transfer learning}
-\subsubsection{self-build CNN}
+\subsubsection{Self-build CNN}
 This could be a CNN without transfer learning which Saniya build.
 
 \subsubsection{Do we have another self-build CNN?}
@@ -789,7 +793,7 @@ This could be a CNN without transfer learning which Saniya build.
 \paragraph{Data pre-processing for InceptionV3 model}\mbox{}\\
 In order to make it easier to make changes in the input data, we decided that the processing of the input data should not be done offline before the modelling, but instead doing on the fly before starting to train the model. 
 The data has been split into train data (85\%) and test data (15\%). Then the train data has been re-split into the final train data (80\%) and validation data (20\%) which is used for validation during training the model. 
-The next step was to get rid of the imbalance between the 4 classes. We needed lot of training runs to figure out which pre-processing should be done in order to use the data for an InceptionV3 model. During this tests all layers of the pretrained model had been freezed. 
+The next step was to get rid of the imbalance between the 4 classes. We needed a lot of training runs to figure out which pre-processing should be done in order to use the data for an InceptionV3 model. During these tests all layers of the pretrained model had been frozen. 
 These tests showed that we needed to use a dataset for training where the class imbalanced had been fixed by data augmentation. To augment only the minority classes (COVID, Lung Opacity and Viral Pneumonia) and use only the original images for the Normal-class did not work. This has led to the Normal-class was not predicted at all. The confusion matrices of these test all looked something like this, c. f. figure \ref{fig:vgg16_yb_03_cm_norm.png}.
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
@@ -802,26 +806,26 @@ As a conclusion of these tests we also augmented the Normal-class, by using the 
 \begin{itemize}
 \item 'Normal':  13860
 \item 'COVID':  14748
-\item 'Lung\_Opacity': 12264 
+\item 'Lung Opacity': 12264 
 \item 'Viral Pneumonia':  13725
 \end{itemize}
 As augmentation technique rotation (of maximum 15°) and translation (of maximum 10\%) had been used. 
 No augmentation has been done to the test and validation dataset. 
-Before starting the training a randomly data augmentation was applied to the training data
+Before starting the training a random data augmentation was applied to the training data.
 \begin{itemize}
 \item HorizontalFlip(p=0.5)
 \item Rotate(limit=15, p=0.5)
 \item ShiftScaleRotate(shift\_limit=0.05, scale\_limit=0.05, rotate\_limit=0, p=0.5) 
 \end{itemize}
 
-As a last step the preprocesing function of the pretrained InceptionV3-model (inception\_v3.preprocess\_input) has been applied to train, test and validation set. This returns a preprocessed array with type float32. The input pixel values are scaled between -1 and 1, sample-wise. 
+As a last step the pre-processing function of the pretrained InceptionV3-model (inception\_v3.preprocess\_input) has been applied to train, test and validation set. This returns a preprocessed array with type float32. The input pixel values are scaled between -1 and 1, sample-wise. 
 
 During the different training runs different batch sizes have been tried out (16 and 64). 
 
 \paragraph{The InceptionV3 model}\mbox{}\\
-In some papers which handle similar tasks the InceptionV3 model was used. (e. g. „Can AI Help in Screening Viral and COVID-19 Pneumonia?“ from Muhammad E. H. Chowdhury et. al). In several sources in the internet it is mentioned that the InceptionV3 model „ensures a balance between performance and computational cost.” This is why we thought it could be worth to try using this model on our data. 
+In some papers which handle similar tasks the InceptionV3 model was used. (e.g. "Can AI Help in Screening Viral and COVID-19 Pneumonia?" from Muhammad E. H. Chowdhury et al.). In several sources on the internet it is mentioned that the InceptionV3 model "ensures a balance between performance and computational cost." This is why we thought it could be worth to try using this model on our data. 
 
-The keras InceptionV3 is a pre-trained convolutional neural network that has 311 layers. It has been already trained on more than a million images from the ImageNet database. This pretrained network can classify images into 1000 object categories, such as keyboard, mouse, pencil, and many animals. As a result, the network has learned rich feature representations for a wide range of images. The network has an image input size of 299-by-299. 
+The Keras InceptionV3 is a pre-trained convolutional neural network that has 311 layers. It has been already trained on more than a million images from the ImageNet database. This pretrained network can classify images into 1000 object categories, such as keyboard, mouse, pencil, and many animals. As a result, the network has learned rich feature representations for a wide range of images. The network has an image input size of 299-by-299. 
 
 \paragraph{1st trial with InceptionV3}\mbox{}\\
 For this 1st trial the following settings were used: 
@@ -842,7 +846,7 @@ The design of the used model is shown in figure \ref{fig:inceptionv3_04.keras_mo
     \label{fig:inceptionv3_04.keras_model_design}
 \end{figure}
 
-The loss and accuracy per epoche in figure \ref{fig:inceptionv3_04_loss_accuracy} show that this model has no good convergence. The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_04_results} show that the overall accuracy is only 83\% and that the COVID-class is not very well predicted. The confusion matrix additionally shows that the data augmentation of the Normal-class helped that the Normal-class was predicted better, than as in prevous tests (c.f. figure \ref{fig:vgg16_yb_03_cm_norm.png}) .
+The loss and accuracy per epoch in figure \ref{fig:inceptionv3_04_loss_accuracy} show that this model has no good convergence. The classification report and the confusion matrix in figure \ref{fig:inceptionv3_04_results} show that the overall accuracy is only 83\% and that the COVID-class is not very well predicted. The confusion matrix additionally shows that the data augmentation of the Normal-class helped that the Normal-class was predicted better, than as in previous tests (c.f. figure \ref{fig:vgg16_yb_03_cm_norm.png}).
 
 \begin{figure}[ht] % the [h!] helps force it "here"
     \centering
@@ -851,12 +855,12 @@ The loss and accuracy per epoche in figure \ref{fig:inceptionv3_04_loss_accuracy
     \label{fig:inceptionv3_04_loss_accuracy}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[ht]
   \centering
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_04_class_report.png}}%
   \qquad
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_04_cm_norm.png}}%
-  \caption{Modelling report and normalized confusion matrix of 1st trial with InceptionV3}
+  \caption{classification report and normalized confusion matrix of 1st trial with InceptionV3}
   \label{fig:inceptionv3_04_results}
 \end{figure}
 
@@ -874,29 +878,29 @@ For this 2nd trial the same settings were used than in the 1st trial, but this t
 \end{itemize}
 
 The design of the used model is shown in figure \ref{fig:inceptionv3_05.keras_model_design}.
-\begin{figure}[ht] % the [h!] helps force it "here"
+\begin{figure}[htb] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{inceptionv3_05.keras_model_design_nice.png}
     \caption{Model design of 2nd trial with InceptionV3}
     \label{fig:inceptionv3_05.keras_model_design}
 \end{figure}
 
-With using the callbacks the learning rate was automatically reduced during training to 1e-05, but the train-loss and train-accuracy per epoche in figure \ref{fig:inceptionv3_05_loss_accuracy} still show a lot of oscillation and therefore no good convergence. The early stopping callback stopped the model after epoch 16 and the best model was the model after epoch 11.\\
-The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_05_results} show that the overall accuracy is still only 85\% and that the COVID-class is not very well predicted. But compared to the 1st trial the f1-score for the COVID-class increased from 0.75 to 0.81.
+With using the callbacks the learning rate was automatically reduced during training to 1e-05, but the train-loss and train-accuracy per epoch in figure \ref{fig:inceptionv3_05_loss_accuracy} still show a lot of oscillation and therefore no good convergence. The early stopping callback stopped the model after epoch 16 and the best model was the model after epoch 11.\\
+The classification report and the confusion matrix in figure \ref{fig:inceptionv3_05_results} show that the overall accuracy is still only 85\% and that the COVID-class is not very well predicted. But compared to the 1st trial the f1-score for the COVID-class increased from 0.75 to 0.81.
 
-\begin{figure}[ht] % the [h!] helps force it "here"
+\begin{figure}[htb] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{inceptionv3_05_loss_accuracy.png}
     \caption{Loss and accuracy per epoch of 2nd trial with InceptionV3}
     \label{fig:inceptionv3_05_loss_accuracy}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!h]
   \centering
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_05_class_report.png}}%
   \qquad
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_05_cm_norm.png}}%
-  \caption{Modelling report and normalized confusion matrix of 2nd trial with InceptionV3}
+  \caption{classification report and normalized confusion matrix of 2nd trial with InceptionV3}
   \label{fig:inceptionv3_05_results}
 \end{figure}
 
@@ -920,9 +924,9 @@ The design of the used model is shown in figure \ref{fig:inceptionv3_06.keras_mo
 \end{figure}
 
 The learning rate was automatically reduced to 1e-05 due to the callback as in the previous test. The best model was saved after 15 epochs. \\
-Figure \ref{fig:inceptionv3_06_loss_accuracy} shows that increasing the batch size from 16 to 64 did not fix the oscillation of the train-loss and train-accuracy. And the validation-loss and validation-accuracy stagnetes. 
+Figure \ref{fig:inceptionv3_06_loss_accuracy} shows that increasing the batch size from 16 to 64 did not fix the oscillation of the train-loss and train-accuracy. And the validation-loss and validation-accuracy stagnates. 
 
-The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_06_results} show that the overall accuracy is 86\%  (which is 1\% more than in the 2nd trial). The COVID-class is still the worst predicted class. But at least the f1-score increased by 1\% in this trial compared to the previous trial. 
+The classification report and the confusion matrix in figure \ref{fig:inceptionv3_06_results} show that the overall accuracy is 86\%  (which is 1\% more than in the 2nd trial). The COVID-class is still the worst predicted class. But at least the f1-score increased by 1\% in this trial compared to the previous trial. 
 
 \begin{figure}[ht] % the [h!] helps force it "here"
     \centering
@@ -936,22 +940,248 @@ The modelling report and the confusion matrix in figure \ref{fig:inceptionv3_06_
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_06_class_report.png}}%
   \qquad
   \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_06_cm_norm.png}}%
-  \caption{Modelling report and normalized confusion matrix of 3rd trial with InceptionV3}
+  \caption{classification report and normalized confusion matrix of 3rd trial with InceptionV3}
   \label{fig:inceptionv3_06_results}
 \end{figure}
 
 
 \paragraph{4th trial with InceptionV3}\mbox{}\\
-ToDo Yvonne - this is inceptionv3\_07
+
+For this 4th trial the same settings were used than in the 3rd trial, but this time the last 4 layers of the pretrained InceptionV3 model were unfrozen. Additionally, the learning rate was reduced to 1e-05. Some of the parameters of the used callbacks were changed. In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item Adam optimizer (with learning rate of 1e-05)
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item first try of fine-tuning by unfreeze the last 4 layers of the InceptionV3 model
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_07.keras_model_design}.
+\begin{figure}%[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_07.keras_model_design_nice.png}
+    \caption{Model design of 4th trial with InceptionV3}
+    \label{fig:inceptionv3_07.keras_model_design}
+\end{figure}
+
+The learning rate was automatically reduced to 1e-06 due to the callback. The EarlyStopping callback did not stop the model before 20 epochs. \\
+Figure \ref{fig:inceptionv3_07_loss_accuracy} shows that in this test the train-loss and train-accuracy is still oscillating. But a slight improvement over the previous tests can be seen: As the epochs increase, the oscillation of the train-accuracy appears to weaken and the amplitude decreases. Furthermore, the curve of the validation-loss and validation-accuracy behaves a little bit more as expected, compared to previous test. The validation-loss slightly decreases with epoch and the validation-accuracy slightly increases with epoch. 
+
+Although the stability of the model looks slightly better, the classification report and the confusion matrix in figure \ref{fig:inceptionv3_07_results} show that the overall accuracy reduced by 3\% compared to the previous test. The COVID-class is still the worst predicted class. \\ 
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_07_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 4th trial with InceptionV3}
+    \label{fig:inceptionv3_07_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_07_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_07_cm_norm.png}}%
+  \caption{classification report and normalized confusion matrix of 4th trial with InceptionV3}
+  \label{fig:inceptionv3_07_results}
+\end{figure}
 
 \paragraph{5th trial with InceptionV3}\mbox{}\\
-ToDo Yvonne - this is inceptionv3\_08
+
+For this 5th trial the same settings were used than in the 4rd trial, but this time another optimizer has been used: RMSprop instead of Adam. The learning rate 1e-05 was not changed. 
+In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item RMSprop (with learning rate of 1e-05)
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item first try of fine-tuning by unfreeze the last 4 layers of the InceptionV3 model
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_08.keras_model_design}.
+\begin{figure}%[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_08.keras_model_design_nice.png}
+    \caption{Model design of 5th trial with InceptionV3}
+    \label{fig:inceptionv3_08.keras_model_design}
+\end{figure}
+
+The learning rate was automatically reduced to 1e-06 due to the callback. The EarlyStopping callback did not stop the model before 20 epochs. \\
+Figure \ref{fig:inceptionv3_08_loss_accuracy} shows that in this test using another optimizer caused stronger oscillation in the train-loss and train-accuracy. The classification report and the confusion matrix in figure \ref{fig:inceptionv3_08_results} show that the switch to the RMSprop optimizer was not a good choice. Although the overall accuracy with 83\% is the same as in the previous test (4th trial), the f1-score of the COVID-class decreased.\\ 
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_08_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 5th trial with InceptionV3}
+    \label{fig:inceptionv3_08_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_08_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_08_cm_norm.png}}%
+  \caption{classification report and normalized confusion matrix of 5th trial with InceptionV3}
+  \label{fig:inceptionv3_08_results}
+\end{figure}
 
 \paragraph{6th trial with InceptionV3}\mbox{}\\
-ToDo Yvonne - this is inceptionv3\_09
+
+For this 6th trial we used again the Adam optimizer and we kept all layers of the InceptionV3 model frozen.  For this test we tried to leave out the randomly applied augmentation to all classes. (The augmentation to handle the class imbalance in the training data was still used. In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item Adam (with learning rate of 1e-05)
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item no fine-tuning has been done
+\item no random augmentation to all classes 
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_09.keras_model_design}.
+\begin{figure}%[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_09.keras_model_design_nice.png}
+    \caption{Model design of 6th trial with InceptionV3}
+    \label{fig:inceptionv3_09.keras_model_design}
+\end{figure}
+
+During the 20 epochs the callback did not automatically reduce the learning rate. The EarlyStopping callback did not stop the model before 20 epochs.\\
+
+Figure \ref{fig:inceptionv3_09_loss_accuracy} shows less oscillation in the train-loss and train-accuracy than in the previous test (5th trial). But the train-accuracy and train-loss of the 4th trial (with unfreezing the last 4 layers and applying random augmentation to all classes) looks better. The validation-loss and validation accuracy look similar as in previous test. 
+
+The classification report and the confusion matrix in figure \ref{fig:inceptionv3_09_results} show that the overall accuracy increased a bit compared to 4th and 5th trial (in which we tried to unfreeze the last 4 layers of the base model).\\ 
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_09_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 6th trial with InceptionV3}
+    \label{fig:inceptionv3_09_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_09_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_09_cm_norm.png}}%
+  \caption{classification report and normalized confusion matrix of 6th trial with InceptionV3}
+  \label{fig:inceptionv3_09_results}
+\end{figure}
 
 \paragraph{7th trial with InceptionV3}\mbox{}\\
-ToDo Yvonne - this is inceptionv3\_10
+
+The InceptionV3 has 311 layers. For this 7th trial we tried to unfreeze a lot more layers of the pretrained base model. As an example from https://keras.io/api/applications/ we chose to retrain the top 2 inception blocks, i.e. we will freeze the first 249 layers and unfreeze the rest. As recommended in that example we used the SGD(learning\_rate=0.0001, momentum=0.9) optimizer to compile the model. In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item SGD(learning\_rate=0.0001, momentum=0.9) optimizer
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item fine-tuning has been done: freeze only the first 249 layers and unfreeze the rest
+\item random augmentation to all classes 
+\end{itemize}
+
+The design of the used model is shown in figure \ref{fig:inceptionv3_10.keras_model_design}.
+\begin{figure}%[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_10.keras_model_design_nice.png}
+    \caption{Model design of 7th trial with InceptionV3}
+    \label{fig:inceptionv3_10.keras_model_design}
+\end{figure}
+
+During the 20 epochs the callback did not automatically reduce the learning rate. The EarlyStopping callback did not stop the model before 20 epochs.\\
+
+Figure \ref{fig:inceptionv3_10_loss_accuracy} still shows a lot of oscillation in the train-loss and train-accuracy. But the train-accuracy and train-loss is nearly the same over all epochs, only a slight increase (accuracy)/ descrease (loss) can be seen over the epochs. 
+
+However the classification report and the confusion matrix in figure \ref{fig:inceptionv3_10_results} show the best result we reached with the InceptionV3 model so far. An overal accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%).
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_10_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 7th trial with InceptionV3}
+    \label{fig:inceptionv3_10_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_10_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_10_cm_norm.png}}%
+  \caption{classification report and normalized confusion matrix of 7th trial with InceptionV3}
+  \label{fig:inceptionv3_10_results}
+\end{figure}
+
+
+\paragraph{8th trial with InceptionV3}\mbox{}\\
+As the accuracy of the previous test (7th trial) was quite promising, with the same setup another test has been done. The only change was, that this time the corresponding masks hade been apllied to the X-ray images. 
+Three tests were carried out.  These differed in that the masks were applied to different data sets. Masks were applied to:
+\begin{enumerate}
+\item the train dataset
+\item the train and validation dataset
+\item the train, validation and test dataset
+\end{enumerate}
+
+In summary the following settings were used: 
+\begin{itemize}
+\item input data as described above
+\item batch size = 64
+\item 20 epochs 
+\item SGD(learning\_rate=0.0001, momentum=0.9) optimizer
+\item callbacks were used (EarlyStopping, Reduce the learning rate and ModelCheckpoint to save the best model)
+\item fine-tuning has been done: freeze only the first 249 layers and unfreeze the rest
+\item random augmentation to all classes 
+\item corresponding mask is applied to the X-ray image in the train dataset
+\end{itemize}
+
+The design of the used model is the same as in the previous test (7th trial, c.f. figure \ref{fig:inceptionv3_10.keras_model_design}.)
+
+When training the model with only masks attached to the training dataset the accuracy and loss does not converge at all, as figure \ref{fig:inceptionv3_11_loss_accuracy} shows. Therefore, the training has been redone with applied masks to the training and validation dataset. If you look at figure \ref{fig:inceptionv3_12_loss_accuracy}, this test looks very promising: The validation loss decreases and the validation accuracy increases. The oscillation of the training loss and accuracy is less than in other tests with the InceptionV3 model, especially in the later epochs there is less oscillation. 
+
+The classification report and the confusion matrix of the training and prediction with only masks applied to the training dataset (figure \ref{fig:inceptionv3_11_results}) show that this model is useless. The classification report and the confusion matrix of the second test (figure \ref{fig:inceptionv3_12_results}) show that the test where the masks have only been applied to the train and validation dataset is useless too. 
+The prediction using X-ray images with applied masks are the best option when using masks, figure \ref{fig:inceptionv3_13_results}. But the overall accuracy is only 84\% and also the COVID class is not very well predicted. This test is comparable to the 7th trial. The only difference is that masks have been added here. If we compare the results of the two predictions of these tests, we can conclude, that the model does better predictions without including the masks. In the 7th trial the overall accuracy was 91\% and even the COVID-class had a f1-score of 91\%, c.f figure \ref{fig:inceptionv3_10_results}.
+
+    
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_11_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 8th trial with InceptionV3. Masks applied to the training dataset.}
+    \label{fig:inceptionv3_11_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[htb] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{inceptionv3_12_loss_accuracy.png}
+    \caption{Loss and accuracy per epoch of 8th trial with InceptionV3. Masks applied to the training and validation dataset.}
+    \label{fig:inceptionv3_12_loss_accuracy}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_11_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_11_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training dataset.}
+  \label{fig:inceptionv3_11_results}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_12_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_12_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training and validation dataset.}
+  \label{fig:inceptionv3_12_results}
+\end{figure}
+
+\begin{figure}%[!ht]
+  \centering
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_13_class_report.png}}%
+  \qquad
+  \subfloat[][]{\includegraphics[width=0.4\linewidth]{inceptionv3_13_cm_norm.png}}%
+  \caption{Classification report and normalized confusion matrix of 8th trial with InceptionV3. Masks applied to the training, validation and train dataset.}
+  \label{fig:inceptionv3_13_results}
+\end{figure}
 
 \subsubsection{DenseNet}
 
@@ -960,10 +1190,9 @@ ToDo Yvonne - this is inceptionv3\_10
 
 
 \section{Conclusion}
+Todo: "Scientific and business conclusions based on the success or failure of the modeling." \\
 
-Overall Conclusion
-Which model performed best
-What worked, what did not work? Why?
-
+Which model performed best? Which model do we chose as a conclusion of all our tests? \\
+Can that model be used? Is it reliable enough? Do we have optimization proposals? \\
 
 \end{document}
