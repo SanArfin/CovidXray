@@ -211,19 +211,19 @@ So, (35059, 8100) indicates that we have 35059 images, and each image has been t
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{hogfeatures_all.png}
-    \caption{Visualisation of hog features}
-    \label{fig:Visualisation of hog features}
+    \caption{visualization of hog features}
+    \label{fig:visualization of hog features}
 \end{figure}
-Figure \ref{fig:Visualisation of hog features}a shows the original grayscale image. We can clearly see the chest X-ray with anatomical structures like ribs and lungs.\\
-Figure \ref{fig:Visualisation of hog features}b effectively displays edges and gradients, especially around the rib cage, clavicle, and lung boundaries. 
+Figure \ref{fig:visualization of hog features}a shows the original grayscale image. We can clearly see the chest X-ray with anatomical structures like ribs and lungs.\\
+Figure \ref{fig:visualization of hog features}b effectively displays edges and gradients, especially around the rib cage, clavicle, and lung boundaries. 
 The blocky structure is normal due to the cell/block division of the HOG algorithm (e.g., 8x8 pixels per cell). The highlighted edges capture shape and 
 orientation information, which HOG is designed to emphasize. The features look rich and well-distributed and are therefore useful for capturing structural patterns:\\
-Figure \ref{fig:Visualisation of hog features}c displays the distribution of HOG Features per image. Most feature values are near zero (common in HOG due 
+Figure \ref{fig:visualization of hog features}c displays the distribution of HOG Features per image. Most feature values are near zero (common in HOG due 
 to sparse gradients) in the histogram and a long tail which represents stronger edges or corners.\\
 The line plot shows the average HOG values across feature indices for each class used for class separability analysis 
-(Figure \ref{fig:Visualisation of hog features}d). It helps identify which feature indices (spatial areas or orientations) contribute more for specific classes. 
+(Figure \ref{fig:visualization of hog features}d). It helps identify which feature indices (spatial areas or orientations) contribute more for specific classes. 
 Overlapping curves indicate similar structures between some classes (e.g., viral vs lung opacity).\\
-We also plot a PCA projection of HOG characteristics (figure \ref{fig:Visualisation of hog features}e). The 2D scatter plot of HOG characteristics 
+We also plot a PCA projection of HOG characteristics (figure \ref{fig:visualization of hog features}e). The 2D scatter plot of HOG characteristics 
 after reduction of dimensionality using PCA (Principal Component Analysis) showed significant overlap suggesting that HOG alone may not strongly separate 
 some classes (hence the need for a classifier).
 In summary, HOG works well visually, but it’s not sufficient alone for strong class separation in our dataset. Therefore for most our ML models, 
@@ -889,11 +889,12 @@ This model achieved significantly improved classification performance with an ov
     \includegraphics[width=1.0\linewidth]{vgg16-8.png}
     \caption{Results for fourth trial using VGG 16 (unfreeze 8 layers)}
     \label{fig:vgg16result4.png}
+\end{figure}
 
 
 \paragraph{Fifth Trial: Fine-tuning VGG16 Transfer Model: Unfreeze last 15 layers}\mbox{}\\
 
->>>>>>> cf369b4 ( added conlusion to report)
+%>>>>>>> cf369b4 ( added conlusion to report)
 In this final modification (figure:\ref{fig:vgg16result5.png}), the model was further refined by unfreezing the last 15 convolutional layers of the VGG16 backbone, allowing for deeper fine-tuning and greater adaptability to the specific patterns present in chest X-ray images. This marks a significant shift from earlier stages, where only a few top layers were trainable, as it enables the model to move beyond generic ImageNet features and learn more domain-specific representations. The classification head remained consistent, comprising global average pooling followed by two dense layers with dropout for regularization, culminating in a softmax layer that outputs predictions for the four target classes. To ensure stable and controlled updates during fine-tuning, the model was compiled with a low learning rate of 1e-5 using the Adam optimizer. Additionally, callbacks such as early stopping and learning rate reduction were used to prevent overfitting and encourage efficient convergence. The model checkpoint callback was configured to monitor validation accuracy instead of loss, ensuring that the version of the model with the best classification performance was preserved. These enhancements collectively aimed to boost the model's ability to generalize and perform reliably across all classes, particularly the challenging ones like COVID-19 and Viral Pneumonia.
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
@@ -927,7 +928,7 @@ However, these gains are not significantly higher than those achieved with fewer
 This suggests that while adding attention mechanisms like SE blocks and unfreezing more layers may enhance the model’s feature learning capacity, the benefit plateaus beyond a certain point, especially when earlier configurations were already well-optimized. In essence, the model’s performance has stabilized, and further architectural complexity or layer unfreezing yields diminishing returns in terms of classification accuracy.
 
 \subsubsection{EfficientNet}
-)
+
 The performance of the EfficientNet model on the multi-class classification task revealed varied effectiveness across different categories. The model achieved the highest precision and recall for the Normal class, with a precision of 0.61 and recall of 0.88, resulting in a solid F1-score of 0.72, indicating reliable identification of normal cases. However, the COVID class suffered from poor recall (0.07) and low precision (0.28), yielding a very weak F1-score of 0.11, which suggested significant difficulty in correctly detecting COVID cases. Similarly, Lung Opacity showed moderate performance with balanced precision and recall around 0.54 and 0.50 respectively, leading to an F1-score of 0.52. The Viral Pneumonia class performed the worst, with zero precision, recall, and F1-score, indicating that the model failed to correctly identify any instances of this category. Overall, the model attained an accuracy of 58\%, but the macro average metrics are low (precision, recall, and F1-score all around 0.34), reflecting poor generalization across all classes. Given the low recall and F1-scores for these critical classes, we decided not to move forward with this model and instead explored other approaches to improve classification performance.
 
 \subsubsection{InceptionV3}
@@ -1328,7 +1329,179 @@ The prediction using X-ray images with applied masks are the best option when us
 \end{figure}
 
 \subsubsection{DenseNet121}
-ToDo: Alex Input your results here
+DenseNet121 is a pretrained model suitable for image identification, especially X-rays. The model layers are described in the figure below:\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121architecture.png}
+    \caption{DenseNet121 architecture (source: researchgate.net)}
+    \label{fig:DN121architecture}
+\end{figure}
+
+We used DenseNet121 as a base model in the following configurations:
+\begin{itemize}
+    \item A first model trained on the raw images reduced to size 64x64.
+    \item A second model trained on data pre-processed in the same manner as for the other models and with extra pre-processing layers added.
+    \item A third model trained on data pre-processed in the same manner as for the other models and with extra dense layers added.
+\end{itemize}
+ Since the DenseNet121 model was pretrained with 224x224 images, we will use this size for our second and third model.
+
+All models use an EarlyStopping regularization technique to prevent overfitting. The callback has the following parameters:
+
+\begin{itemize}
+    \item patience: 5
+    \item min delta: 0.01
+    \item verbose: 1
+    \item mode: 'min'
+    \item  monitor: 'val loss'
+\end{itemize} 
+
+We also use a reduce learning rate callback with the following parameters:
+
+\begin{itemize}
+    \item patience: 3
+    \item min delta: 0.01
+    \item verbose: 1
+    \item factor: 0.1
+    \item cooldown: 4
+    \item  monitor: 'val loss'
+\end{itemize} 
+
+\textbf{1st trial}: Model trained with not pre-processed reduced images:\\
+We tried this first model to get an idea about the  average score that might be obtained with a Deep Learning model. Its architecture looks like this:
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121archsmall.png}
+    \caption{First Model}
+    \label{fig:DN121archsmall}
+\end{figure}
+
+The model accuracy on the training data is 0.8505. The results obtained with this model are shown below:
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121cmsmall.png}
+        \caption{Confusion Matrix}
+        \label{fig:DN121cmsmall}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121crsmall.png}
+        \caption{Classification Report}
+        \label{fig:DN121crsmall}
+    \end{minipage}
+\end{figure}
+
+The Model Accuracy and the Model Loss evolution with each epoch is shown below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121graphsmall.png}
+    \caption{ModelAccuracy and Model Loss}
+    \label{fig:DN121graphsmall}
+\end{figure}
+
+\textbf{2nd trial}: Model with extra pre-processing layers trained on full size images:\\
+In this model we added a few pre-processing layers: a Random Rotation layer, a Random Translation layer, a random Zoom layer and a Random flip layer, with the purpose of image augmentation.
+Initially, the base model layers are completely frozen. We unfreeze some of them and check the model performance. After unfreezing 10 layers we don't get any further improvement, so the final model will have 10 base model layer unfrozen. 
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121arch1.png}
+    \caption{Model with pre-processing added}
+    \label{fig:DN121arch1}
+\end{figure}
+
+The model accuracy on the training data is 0.8215, slightly lower despite data augmentation and larger size. The results obtained with this model are shown below:
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121cm1.png}
+        \caption{Confusion Matrix}
+        \label{fig:DN121cm1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121cr1.png}
+        \caption{Classification Report}
+        \label{fig:DN121cr1}
+    \end{minipage}
+\end{figure}
+
+In the pictures above, the encoded labels are:
+\begin{itemize}
+    \item COVID: 0
+    \item Lung Opacity: 1
+    \item Normal: 2
+    \item Viral Pneumonia: 3
+\end{itemize}
+
+The Model Accuracy and the Model Loss evolution with each epoch is shown below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121graph1.png}
+    \caption{ModelAccuracy and Model Loss}
+    \label{fig:DN121graph1}
+\end{figure}
+
+The augmentation layers do not help with the model's performance.
+
+\textbf{3rd trial}: Model with extra dense layers trained on full size images:\\
+In this model we add more dense layers with decreased number of perceptrons. The decrease is gradual: we have a 512 layer, then a 256, then a 64, a 16 and the output layer has the 4 perceptrons needed for the 4 labels. 
+Similarly to the second model, we unfreeze 10 layers of the base model to improve performance.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121arch2.png}
+    \caption{Model with pre-processing added}
+    \label{fig:DN121arch2}
+\end{figure}
+
+The model accuracy on the training data is 0.9457, the best so far. The results obtained with this model are shown below:
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121cm2.png}
+        \caption{Confusion Matrix}
+        \label{fig:DN121cm2}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{DN121cr2.png}
+        \caption{Classification Report}
+        \label{fig:DN121cr2}
+    \end{minipage}
+\end{figure}
+
+In the pictures above, the encoded labels are:
+\begin{itemize}
+    \item COVID: 0
+    \item Lung Opacity: 1
+    \item Normal: 2
+    \item Viral Pneumonia: 3
+\end{itemize}
+
+The Model Accuracy and the Model Loss evolution with each epoch is shown below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DN121graph2.png}
+    \caption{ModelAccuracy and Model Loss}
+    \label{fig:DN121graph2}
+\end{figure}
+
+The overall score is  better than the previous models based on DenseNet121, but not as good as the other models.
 
 \subsubsection{INTERPRETIBILTY OF BEST DEEP LEARNING MODELS:GRAD-CAM}\mbox{}\\
 
