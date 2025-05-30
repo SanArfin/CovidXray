@@ -37,7 +37,7 @@ To solve this classification task, we first tried out various machine learning m
 These were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. 
 For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out.
 
-As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used self-build lightweight Convolutional Networks (CNN) and LeNet. On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: VGG16, EfficientNet, InceptionV3 and DenseNet121. We tried to apply these models with and without fine-tuning to our data. 
+As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used a self-build lightweight Convolutional Networks (CNN). On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: VGG16, EfficientNet, InceptionV3 and DenseNet121. We tried to apply these models with and without fine-tuning to our data. 
 
 Since our local computers were no longer sufficient for these deep learning tasks, we performed these calculations on Google Colab. The work and tests with the deep learning models have shown that a different type of data preparation was necessary for this modeling. 
 
@@ -894,7 +894,6 @@ This model achieved significantly improved classification performance with an ov
 
 \paragraph{Fifth Trial: Fine-tuning VGG16 Transfer Model: Unfreeze last 15 layers}\mbox{}\\
 
-%>>>>>>> cf369b4 ( added conlusion to report)
 In this final modification (figure:\ref{fig:vgg16result5.png}), the model was further refined by unfreezing the last 15 convolutional layers of the VGG16 backbone, allowing for deeper fine-tuning and greater adaptability to the specific patterns present in chest X-ray images. This marks a significant shift from earlier stages, where only a few top layers were trainable, as it enables the model to move beyond generic ImageNet features and learn more domain-specific representations. The classification head remained consistent, comprising global average pooling followed by two dense layers with dropout for regularization, culminating in a softmax layer that outputs predictions for the four target classes. To ensure stable and controlled updates during fine-tuning, the model was compiled with a low learning rate of 1e-5 using the Adam optimizer. Additionally, callbacks such as early stopping and learning rate reduction were used to prevent overfitting and encourage efficient convergence. The model checkpoint callback was configured to monitor validation accuracy instead of loss, ensuring that the version of the model with the best classification performance was preserved. These enhancements collectively aimed to boost the model's ability to generalize and perform reliably across all classes, particularly the challenging ones like COVID-19 and Viral Pneumonia.
 \begin{figure}[h!] % the [h!] helps force it "here"
     \centering
