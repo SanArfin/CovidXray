@@ -1562,6 +1562,7 @@ The overall score is  better than the previous models based on DenseNet121, but 
 
 
 
+
 \section{Conclusion}
 
 \subsection{VGG16 Grad-CAM Grid}
@@ -1583,19 +1584,40 @@ The Grad-CAM visualizations provide valuable insight into model behavior. While 
 
 By contrast, VGG16, despite potentially competitive accuracy, shows evidence of overfitting and reliance on spurious cues, reducing its reliability in real-world clinical settings. These findings highlight the importance of not only performance metrics but also interpretability when evaluating models for medical applications.
 
+\subsection{Improvements:Dual-Input (Image + Mask) with Mask as Attention in VGG16}We tried to run vgg16 with attention masks.In this implementation, a deep learning model was constructed for multi-class image classification using both RGB images and corresponding mask inputs. The base of the model is a pre-trained VGG16 convolutional neural network, which was loaded with weights trained on ImageNet. To leverage the learned features while adapting to the new task, most of the earlier layers of VGG16 were frozen to prevent their weights from updating during training, while the last eight layers were left trainable to allow fine-tuning.
+
+The model takes two inputs: a standard 3-channel RGB image and a single-channel mask that highlights regions of interest. The mask is resized to match the spatial dimensions of the last convolutional layer’s output feature map from VGG16. This resized mask is then applied as an attention mechanism by element-wise multiplication with the feature map, effectively focusing the network on relevant regions identified by the mask.
+
+Following this attention-modulated feature extraction, a classification head is added consisting of global average pooling to reduce the spatial dimensions, two fully connected (dense) layers with ReLU activations, batch normalization, and dropout for regularization. The final output layer uses a softmax activation to predict probabilities over four classes.
+
+The model was compiled using the Adam optimizer with a low learning rate to fine-tune the pre-trained weights carefully, employing sparse categorical cross-entropy loss appropriate for multi-class classification with integer labels. The architecture balances leveraging pre-trained knowledge and adapting to new masked input, aiming to improve classification performance by focusing on meaningful image regions.
+
+The classification results show varied performance across classes. The “Normal” class achieved high precision (0.93) but very low recall (0.07), resulting in a low F1-score of 0.13, indicating the model is cautious but misses many true “Normal” cases. The “COVID” class performed strongly with balanced precision (0.87) and recall (0.90), and a high F1-score of 0.88. “Lung Opacity” had high recall (0.95) but lower precision (0.40), suggesting many false positives, reflected in an F1-score of 0.56. “Viral Pneumonia” demonstrated excellent recall (0.99) and moderate precision (0.56), with a solid F1-score of 0.71. Overall accuracy was 52\%, with a macro average F1-score of 0.57, showing moderate balanced performance. The AUC scores complement these findings: “COVID” and “Viral Pneumonia” had excellent AUCs near 0.99, indicating strong discrimination, while “Normal” and “Lung Opacity” had lower AUCs of 0.82 and 0.74 respectively, pointing to room for improvement. The macro AUC of 0.88 suggests that, despite some challenges, the model performs well overall in distinguishing between the classes.
+
+The Gradcam results in figure\ref{figures_report_2/comparison gradcam.png}show better focus on the area of interest.
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures_report_2/comparison gradcam.png}
+    \caption{GRADCAM COMPARISON}
+    \label{figures_report_2/comparison gradcam.png}
+\end{figure}
+
+
+\subsubsection{Ensemble:}
+We developed an ensemble interpretability method by combining Grad-CAM heatmaps from two distinct deep learning models trained for multi-class classification of chest X-ray images. One model utilized a 4-channel input, while the other incorporated both RGB images and corresponding segmentation masks as inputs. For each input image, we generated Grad-CAM heatmaps from the last convolutional layers of both models, resized and averaged them to create a combined heatmap that highlights the regions of the image jointly attended to by both models. This approach not only improved the interpretability by visualizing consensus attention maps but also enhanced classification performance. The ensemble model achieved an impressive accuracy of 92.03\% on the test set. The confusion matrix demonstrated strong class-wise performance with minimal misclassifications, and the classification report showed high precision, recall, and F1-scores across all classes—Normal (F1-score: 0.93), COVID (0.94), Lung Opacity (0.89), and Viral Pneumonia (0.94). These results indicate that the ensemble effectively leverages complementary strengths of both models, yielding robust predictions and insightful visual explanations.
+
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures_report_2/ensmeble.png}
+    \caption{GRADCAM ENSEMBLE}
+    \label{figures_report_2/ensmeble.png}
+\end{figure}
+
+Figure\ref{figures_report_2/ensmeble.png} shows that using both models we are now able to focus and predict better from within the lungs area.
+
 
 \subsection*{Future Perspectives and Recommendations}
 
-While the current Grad-CAM visualizations provide some interpretability into the model decisions, the results—particularly for the VGG16 transfer learning model—are not fully satisfactory. The heatmaps frequently highlight non-relevant regions, suggesting that the model may not be learning sufficiently robust or clinically grounded features. This could be due to limited fine-tuning, insufficient domain-specific adaptation, or reliance on spurious image artifacts.
-
-To improve this, future work could explore re-training the VGG16 model on pre-segmented or masked lung regions, thereby reducing background noise and guiding the model’s attention toward anatomically relevant structures. Given more computational resources and training time, such an approach may significantly enhance the quality and reliability of the learned features.
-
-Similarly, the custom CNN model shows promise in localizing disease-relevant regions, but its predictive performance remains modest. Increasing its depth by adding more convolutional layers, residual connections, or attention mechanisms could improve both feature extraction and generalization. Additional enhancements could involve data augmentation strategies, ensemble techniques, or integration of domain knowledge (e.g., lung region priors) to improve both classification accuracy and interpretability.
-
-In summary, while the current models offer valuable insights, their diagnostic reliability and focus can be further strengthened through better data preprocessing, architectural improvements, and extended training—especially in resource-rich environments.
-
-
-
-
+In conclusion, this study demonstrated the effectiveness of combining multiple deep learning models through an ensemble Grad-CAM approach to improve both the accuracy and interpretability of chest X-ray classification for diseases such as COVID-19, Lung Opacity, Viral Pneumonia, and Normal cases. The ensemble not only achieved high classification performance but also provided meaningful visual explanations by highlighting important regions agreed upon by both models. This method shows promise for assisting clinicians in diagnostic decision-making by enhancing trust and transparency in AI predictions. For future work, expanding the dataset to include more diverse patient populations and additional diseases could improve generalizability. Additionally, exploring more sophisticated fusion strategies for heatmaps may further enhance model performance and clinical relevance. Finally, real-world validation in clinical settings will be crucial to assess practical utility and impact.
 
 \end{document}
