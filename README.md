@@ -9,19 +9,28 @@ Project Organization
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     ├── data               <- Should be in your computer but not on Github (only in .gitignore)
-    │   ├── processed      <- The final, canonical data sets for modeling.
+    │   ├── processed      <- processed data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
+    ├── models             <- best trained model
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's name, and a short `-` delimited description, e.g.
-    │                         `1.0-alban-data-exploration`.
+    │
+    ├── notebooks                       <- Jupyter notebooks.  
+    │   │                               <- code of the final model
+    │   ├── experimentations            <- code of all the experiexperimentations during the project  
+    │   │   ├── deep_learning           <- deep laerning tests 
+    │   │   │   ├── data_preprocessing  <- code to preprocess the data 
+    │   │   │   └── model_testing       <- code to do modeling
+    │   │   ├── machine_learning        <- machine learning test
+    │   │   │   ├── data_preprocessing  <- code to preprocess the data 
+    │   │   │   └── model_testing       <- code to do modeling
+    │   
     │
     ├── references         <- Data dictionaries, manuals, links, and all other explanatory materials.
     │
-    ├── reports            <- The reports that you'll make during this project as PDF
-    │   └── figures        <- Generated graphics and figures to be used in reporting
+    ├── reports            <- Contains the final versions of the 3 reports as pdf
+    │   └── latex          <- tex-files to generate the pdf reports
+    │   └── figures        <- Generated graphics and figures used in the reports
     │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
