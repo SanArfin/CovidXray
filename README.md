@@ -1,7 +1,8 @@
 Analysis of COVID19 chest X-rays
 ==============================
 
-This diagram explains the structure of the project's repository. 
+This README.md file explains the content of this repository. 
+
 
 Project Organization
 ------------
@@ -74,4 +75,37 @@ Sample folder structure
 ```
 
 
+------------
+
+Models
+------------
+
+In the "models" folder the final pretrained model, we chose in this project, is saved. 
+
+
+------------
+
+Notebooks
+------------
+
+In the "notebooks" folder you can access the jupyter notebooks which were used and created during this project. 
+The head folder "notebooks" contains the jupyter notebooks which refer to the final model we chose. 
+In addition, there is the folder "experimentations", which contains all jupyther nootbooks that were used for the experimentation phase. These jupyter nootbooks are divided into machine and deep learning with each folder having a subfolder for data preprocessing and modelling.
+
+------------
+
+Reports
+------------
+
+The "reports" folder contains the final versions of the three reports of this project. The subdolder "latex" contains the tex-files to generate the pdf reports and the subfolder "figures" contains all the figures which are included in the three reports.
+
+------------
+
+src
+------------
+
+This folder is not used within this project.
+
+
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
