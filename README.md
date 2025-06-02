@@ -1,7 +1,7 @@
-Project Name
+Analysis of COVID19 chest X-rays
 ==============================
 
-This repo is a Starting Pack for DS projects. You can rearrange the structure to make it fits your project.
+This diagram explains the structure of the project's repository. 
 
 Project Organization
 ------------
@@ -49,9 +49,9 @@ Project Organization
     │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
     │   │   └── visualize.py
 
---------
+------------
 
-Data / Image organisation
+Data / Image Organization
 ------------
 
 It is important to follow the structure from above `Project Organization` to ensure all participants could work with the sources in the same way! So avoid using absolute pathes in the source code is important - use relative paths instead! The folder `data` is alreade configured in `.gitignore` file and will not be included into the git repository.
