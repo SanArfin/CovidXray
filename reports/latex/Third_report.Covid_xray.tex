@@ -50,33 +50,31 @@ source of the data\\
 %------------------------------------------------------------------------
 % Chapter 3: Methodology - Modelling
 %------------------------------------------------------------------------
-\section{Modelling}
-Some ideas\\
-Summary of the modelling. Must be content from our second report, but more filtered. Maybe only the best try from each model. And some graphical overview of how good theses "best" candidates are. So that the reader get's an overview. Don't include all the details!!! \\
-Findings from traditional machine learning, findings from deep learning, and transfer learning. 
+\section{Modelling} \label{section:modelling}
+
 
 %------------------------------------------------------------------------
-% 3.1 : Introduction to modelling
+% 3.1 : Overview of modeling
 %------------------------------------------------------------------------
+\subsection{Overview of the modeling}
+This chapter summarizes the modeling carried out in this project. Not all modeling runs which have been performed are described. These can be found in our 2nd report: "Second\_report.Covid\_xray.pdf". Here we focus on presenting the essential modeling steps for each model used. In addition, the best results of each model are presented. 
 
+In this project we used a two-step approach to solve this classification task. Initially, we applied machine learning techniques to extract meaningful insights. The models used were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out. This data preparation had been done previously to training. 
 
-\subsection{Introduction to modelling}
-In this project we used a two-step approach to solve this classification task. Initially, we applied machine learning techniques to extract meaningful insights. The models used were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out.
-As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used a self-build lightweight Convolutional Networks (CNN). On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: VGG16, EfficientNet, InceptionV3 and DenseNet121. We tried to apply these models with and without fine-tuning to our data. 
+As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used a self-build lightweight Convolutional Networks (CNN). On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: EfficientNet, InceptionV3, DenseNet121 and VGG16. Finally, we combined two different deep learnin models to an ensemble model. We tried to apply these models with and without fine-tuning to our data. 
 
 %------------------------------------------------------------------------
 % 3.2 : Machine Learning Tequniqes
 %------------------------------------------------------------------------
 
-\subsection{Step 1: Machine Learning Techniques}
-We started with traditional machine learning algorithms. We already had in mind that these models might not be the best choice to solve a classification task with X-ray images. However, it was worth a try to test them because they have a big advantage over deep learning models: They are computationally
-inexpensive and we can quickly iterate over different versions, features and preprocessing methods. The models we employed included:
+\subsection{Step 1: Machine Learning Models}
+We started with traditional machine learning algorithms. We already had in mind that these models might not be the best choice to solve a classification task of chest X-ray images. However, it was worth a try to test them because they have a big advantage over deep learning models: They are computationally inexpensive and we can quickly iterate over different versions, features and preprocessing methods. The models we employed included:
 
 \begin{itemize}
-    \item Logistic Regression – A well-known method for classification problems, helping us understand the probability of an event occurring.
+    \item Logistic Regression – A well-known method for classification problems.
     \item Random Forest – An ensemble method that builds multiple decision trees to improve accuracy and handle complex relationships in the data.
-    \item Support Vector Machines (SVM) – A technique that finds the optimal boundary between different categories, performing well in situations with clear separability.
-    \item XGBoost – A powerful gradient boosting algorithm that refines predictions by learning from errors iteratively.
+    \item Support Vector Machines (SVM) – A technique that finds the optimal boundary between different categories.
+    \item XGBoost – A powerful algorithm that is known for its accuracy and speed and can handle large datasets.
     \item MLP Classifier – A simple neural network that captures non-linear relationships but remains limited compared to deeper architectures.
 \end{itemize}
 
@@ -85,62 +83,236 @@ inexpensive and we can quickly iterate over different versions, features and pre
 %------------------------------------------------------------------------
 
 \subsubsection{Logistic Regression}
-With the logistic regression model 6 different model runs were performed. On the one hand, the images themselves were used as input data. For performance reasons, however, they had to be significantly reduced in size (only 20x20 pixels). For another run, filtering methods were applied to these X-ray images. In another run, additional masks were added to the images to obscure the areas outside the lungs. This is intended to focus the model on the important areas. 
-For another model run the HOG-technique (Histogram of Oriented Gradients) had been applied to extract structural patterns from the grayscale X-ray images. HOG captures from X-rays
+With the Logistic Regression model 6 different model runs were performed. On the one hand, the images themselves were used as input data. For performance reasons, however, they had to be significantly reduced in size (only 20x20 pixels). For another run, filtering methods were applied to these X-ray images. In another run, additional masks were added to the images to obscure the areas outside the lungs. This should help to focus the model on the important areas. 
+For another model run not the images themselves had been used as input data. Before the modeling, the HOG-technique (Histogram of Oriented Gradients) had been applied to extract structural patterns from the grayscale X-ray images. HOG captures from X-rays
 \begin{itemize}
-     \item Edges of lung boundaries, rib cage, and lesions.
-     \item Orientation and distribution of densities i.e. darker/lighter areas correspond to tissue and opacity differences.
-     \item Shape and spread of abnormalities, like how diffuse or sharp an opacity is.
+     \item edges of lung boundaries, rib cage, and lesions
+     \item orientation and distribution of densities i.e. darker/ lighter areas correspond to tissue and opacity differences
+     \item shape and spread of abnormalities, like how diffuse or sharp an opacity is
 \end{itemize}
 Although HOG is handcrafted, not learned  and  so it may miss subtle texture or high-level patterns, it is a fast, interpretable, and memory-efficient way to extract features from chest X-rays. 
 Aditionally we compressed the HOG features by a PCA (Principal Component Analysis) and finally we tried to optimize the model's hyperparameters. 
 
-Using this HOG-extracted features as input data achieved an overall accuracy of 73.7\% which is the best accuracry we could reach using a logistic regression model. This model run achieved also the highest scores for the COVID class we could achieve with a logistic regression model (precision: 52\%, recall: 56\% and f1-score: 54\%). This result leaves room for improvement. Logistic regression might not be the best choice for such a high-dimensional feature set.\\
+With a Logistic Regression model the best overall accuracy we achieved was 73.7\% using the HOG-extracted features as input data. This model run also made the best predictions for the COVID class (using a Logistic Regression model). The scores were:  precision: 52\%, recall: 56\% and f1-score: 54\%. This result leaves room for improvement. Logistic regression might not be the best choice for such a high-dimensional feature set.\\
+
+
+%------------------------------------------------------------------------
+% 3.2.2 : Random Forest
+%------------------------------------------------------------------------
 
 \subsubsection{Random Forest}
-From the various experiments with the logistic regression model, we have already seen that the use of the HOG features as input data were the most promising model rus. Therefore, the tests with the random forest model started directly with the HOG-features as input data. With the random forst model 2 different model runs were performed: One with the model's default hyperparameters. And the second run used optimized hyperparameters found by using the GridSearch-technique.  This optimization of the hyperparamters brought a slight improvement. We thus achieved an overall accuracy of 76\% with the radom forest model. Also, the prediction of the COVID class could be slightly improved (precision: 62\%, recall: 66\% and f1-score: 62\%) copared to our best logistic regression model.
+From the various experiments with the Logistic Regression model, we have already seen that the use of the HOG features as input data were the most promising model rus. Therefore, the tests with the Random Forest model started directly with the HOG-features as input data. 
+
+With the random forst model 2 different model runs were performed: One with the model's default hyperparameters. And the second run used optimized hyperparameters found by using the GridSearch-technique. This optimization of the hyperparamters brought a slight improvement. We thus achieved an overall accuracy of 76\% with the Random Forest model. Also, the prediction of the COVID class could be slightly improved (precision: 62\%, recall: 61\% and f1-score: 62\%) copared to our best Logistic Regression model.
+
+%------------------------------------------------------------------------
+% 3.2.3 : Support Vector Machines (SVM)
+%------------------------------------------------------------------------
 
 \subsubsection{Support Vector Machines (SVM)}
+As the model runs with the Random Forest model slightly imroved the previous predictions made with the Logistic Regression model, we wanted to test if the use of another model could further improve the predictions. We performed 7 more or less sucessful model runs with SVM model. 
+With the SVM model, we first wanted to check again the qualitiy of the predictions when we use the images themselves. Therefore, we did not immediately start with the extracted features. The first test had already shown that we needed to drastically reduce the size and number of images when using a SVM model. A test using all images (augmented and non-augmented, approx. 35000 images) reduced to 128 x 128 pixels was aborted after 6 hours. As it took that much time even without using a hyperparameter optimization technique like GridSearchCV, we needed to change the dataset (number or/ and size of images) for further tests. 
 
+Further runs in which we changed the size and number of images, and tested different hyperparamater optimization techniques showed that, for performance reasons, we could only use a very small number of images (1000 per class) with a resolution of 128 x 128 pixels. This resulted in the highest overall accuracy (57\%) we could achieve with an SVM model using the images themselves. However, the results for the COVID class were not satisfactory (precision: 45\%, recall: 43\% and f1-score: 44\%). The time needed to fit the model was about 1 hour, which is a lot for such poor prediction results. Maybe the model would perform better if more images or more pixels per image would be used. But due to the long training times we considered a training with more images not as an option.
 
+Therefore, we decided to use already extracted features as input data of the SVM models, because this had already revealed better results when using other machine learning models like Random Forest and Logistic Regression. In conclusion of various tests, using Hog-features with PCA dimensionality reduction gave us SVM model's the best accuracy of 77\% and for the COVID-class (precision: 59\%, recall: 63\% and f1-score: 61\%). These results are comparable to those of the best Random Forest model.
 
-These models provided valuable insights, allowing us to identify correlations and make initial predictions. However, despite their reliability, they faced limitations in capturing highly complex interactions within the data.
+%------------------------------------------------------------------------
+% 3.2.4 : XGBoost - Extreme Gradient Boosting
+%------------------------------------------------------------------------
 
-\subsection{Step 2: Transition to Deep Learning}
-Recognizing the need for improved accuracy, we moved to deep learning—a subset of machine learning that excels in handling vast amounts of data and uncovering intricate patterns without human-defined features.
+\subsubsection{XGBoost - Extreme Gradient Boosting}
+As XGBoost - models (Extreme Gradient Boosting) are known for handling large datasets efficiently we gave this a try. We performed 5 different test runs with a XGBoost - model. 
 
-Deep learning models differ from traditional machine learning by using multiple layers of artificial neurons to process information. The key advantages we observed included:
+As a first step, we tested the performance of an XGBoost model against the previously utilized SVM modelm using the same input data (4000 images with 128 × 128 pixels). XGBoost significantly outperformed SVM in terms of efficiency, completing the task in just 5 minutes compared to SVM’s 1-hour runtime. Furthermore, the accuracy of the XGBoost prediction was much better. 
+Building upon these promising results, we extended our dataset for further XGBoost runs, increasing the number of images by using all images (including both augmented and non-augmented iamges, approx. 35000) while maintaining the same image resolution.
 
+For furhter runs we explored multiple variations of input data. These included combinations of applying and omitting masks, using and not-using filters. The highest overall accuracy of 86\% was achieved with an XGBoost model trained on the full dataset, without masks or filters. Notably, the classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score, marking our best results so far with a machine learning model.
+
+Although models such as Random Forest, Logistic Regression, and SVM demonstrated improved predictive accuracy when utilizing pre-extracted features as input data, this was not the case for XGBoost model. Despite expectations, HOG-features did not yield superior results compared to using the images themselves.
+
+%------------------------------------------------------------------------
+% 3.2.5 : MLP-Classifier
+%------------------------------------------------------------------------
+
+\subsubsection {MLP-Classifier} 
+As a transition to deep learning, we also tried out the Multi-layer Perceptron classifier model (MLP-Classifier), which is a simple neural network. 
+
+Overall we performed 7 runs with an MLP-Classifier which involved modifications of the model's architecture/ layers, activation functions, class weights and learning rate. Although the overall accuracy of these runs was not too bad (77-78\%), the COVID class could not be predicted well. Therefore, we tried to work on the input data and used techniques like SMOTE (Synthetic Minority Over-sampling Technique) and focal loss to help to balance the class distribution. But the COVID-class was still underperforming. 
+
+HOG-extracted featues were used for the previous tests with the MLP classifier. To further improve the predictions, an attempt was made to use features that were extracted with a ResNet model. ResNet is a deep convolutional neural network pretrained on ImageNet. It learns hierarchical, high-level features (like textures, shapes, patterns) that are often more effective than handcrafted ones. With this we achieved the best accuracy (82.8\%) with a MLP classifier model. The Covid class was still difficult to predict, the recall: was only 69\%, but the predictions (recall) for the other classes were better: Lung Opacity: 78\%, Normal: 89\%, Viral Pneumonia: 94\%.
+During training, we observed signs of overfitting. To counteract this L2 regularization (Ridge Regularization) was introduced and the number of neurons was reduced. Despite these adjustments, while overfitting was reduced, the accuracy did not improve.
+
+%------------------------------------------------------------------------
+% 3.3 : Deep Learning
+%------------------------------------------------------------------------
+
+\subsection{Step 2: Deep Learning Models}
+
+We have already performed many runs with several traditional machine learning models based on different preprocessed input data. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy of 86\% so far. This model's classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score. Now it is time to move on to try if Convolutional Neural Networks (CNN) can improve the accuracy of the predictions on our chest X-ray dataset. 
+
+Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features.
+
+%------------------------------------------------------------------------
+% 3.3.1 : Self-build CNN model
+%------------------------------------------------------------------------
+
+\subsubsection{Self-built CNN model} 
+We started into modeling with deep learning by building our own small CNN. As a main part our CNN contains 3 convolutional blocks, each containing the following layers: 
 \begin{itemize}
-    \item Better Feature Extraction – While machine learning relies on manually selected features, deep learning autonomously discovers patterns within the data.
-    \item Improved Generalization – The model became more adaptable, performing well even with new and unseen data. 
-    \item Higher Accuracy – By leveraging deeper architectures, we saw a notable boost in predictive performance.
+    \item Convolutional Layer
+    \item Bacht normalization layer
+    \item Activation layer
+    \item MaxPooling2D layer
 \end{itemize}
+In simple words: With these convolutional blocks the model "learns" from the input X-ray images and step by step extracts the relevant features in order to solve the classification task. 
+Overall, the model achieved an accuracy of 92\%. When broken down by class, the model performed particularly well on the COVID and Viral Pneumonia categories. For COVID cases, it attained a precision of 93\%, a recall of 98\%, and an F1-score of 95\%, indicating both high correctness and sensitivity in identifying positive cases. 
 
-As a result, our deep learning models consistently outperformed traditional machine learning techniques. They identified patterns we hadn't anticipated, providing more refined and actionable insights.
+Even with this quite simple self-built CNN, we achieved better results than with all previous attempts using machine learning models. In the following tests we focused on using CNNs, which have been pretrained on other images, and partly re-trained them on the chest X-ray images from our own dataset.
+
+%------------------------------------------------------------------------
+% EfficientNet
+%------------------------------------------------------------------------
+
+\subsubsection{EfficientNet} 
+The model runs with the EfficientNet model revealed, that not all deep learning models show better results than we achieved during our test with the machine learning models. 
+The COVID class suffered from poor recall (0.07) and low precision (0.28), yielding a very weak F1-score of 0.11, which suggested significant difficulty in correctly detecting COVID cases. Overall, the model attained an accuracy of only 58\%. Given the low recall and F1-scores for these critical classes, we decided not to move forward with this model and instead explored other approaches to improve classification performance.
+
+%------------------------------------------------------------------------
+% InceptionV3
+%------------------------------------------------------------------------
+
+\subsubsection{InceptionV3} \label{section:InceptionV3}
+
+As the first attempts using a pretrained InceptionV3 model showed very poor results, we performed several model runs with modifications of the used input data. Therefore, the data processing was adapted to be done dynamically before training, rather than offline, allowing easier modifications. As initial augmentation attempts of the training dataset led to poor Normal-class predictions, we concluded that for this model the imbalance has to be corrected by augmenting images across all classes (including the normal class) not just the minority ones. Using these input data led to more promising results, so that we used this dataset as inpout data for the model runs with the InceptionV3 model. 
+
+At first, we tried to use the pretrained InceptionV3 model as it is, without retraining some layers on our chest X-ray dataset. We performed 8 major runs with the InceptionV3 model. During these tests we changed different parameters like the batach size, number of epochs, laerning rate, the optimizer and used callbacks to automatically reduce the learning rate during training. The results of all of these model runs were not satisfying. The accuracy of the predictions was not as high as of other models. Beyond that, looking at the evolution of accuracy and loss over the different epochs of training, there is a lot of oscillation. This indicates that the model does converge which does not give us confidence in this model. 
+
+As a next step we tried to unfreeze several layers of the pretrained model in order to retrain and adapt them to our X-ray dataset. First we tried to unfreeze only the last 4 layers and then even tried to unfreeze a lot more layers (about 60 of 311 layers) - as suggested in several online sources. This run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%). 
+
+As this looks quite promising, we repeated this test and tried to improve the predictions by apllying the corresponding attention masks to the X-ray images. This could help the deep learning model to focus only on the relevant areas of the images: the lungs. We tried 3 different datasets, by applying the masks only to the train dataset, to the train and validation dataset and finally to the train, validation and test dataset. The 3rd attempt, where the masks were applied to the train, validation and test dataset, showed the only useful results. However, the overall accuracy was less with only 84\% and also the predictions for the COVID class are worse than without masks. 
+
+
+%------------------------------------------------------------------------
+% DenseNet121
+%------------------------------------------------------------------------
+
+\subsubsection{DenseNet121} 
+As we had already carried out very extensive tests with the InceptionV3 model, we saw no further room for improvement with this model. We therefore wanted to test another model: DneseNet121. Three different runs have been performed using a pretrained DenseNet121 model. During these runs we tried to improve the accuracy by: 
+\begin{enumerate}
+    \item changing the size of the input images (64x64 and 224x224 pixel)
+    \item adding extra pre-processing layers before the pretrained DenseNet121 model 
+    \item adding more dense layers after the pretrained DenseNet121 model.
+\end{enumerate}
+
+The third run showed the highest overall accuracy (85\%) we got with a DenseNet121 model. Unfortunately, the worst predicted class is COVID: precision 73\%, recall 78\% and f1-score 76\%. 
+We achieved less good results with the DenseNet121 model than with other models. Nevertheless, the diagram of loss and accuracy per epoch shows that the model does not have as strong convergence problems as the InceptionV3 model. 
+
+%------------------------------------------------------------------------
+% VGG16
+%------------------------------------------------------------------------
+
+\subsubsection {VGG16} 
+We performed 7 major model runs using a pretrained VGG16 model. As already seen in chapter \ref{section:InceptionV3} on the InceptionV3 model, for the model runs of the VGG16 model the data processing was adapted to be done dynamically before training, rather than offline, allowing easier modifications.
+
+In the first model runs the convolutional base of VGG16 was used as a fixed feature extractor by freezing its layers, allowing only the custom classification head of the model to be trained. The predictions for some classes were very poor, so we moved on to test to unfreeze some of the layers of the pretrained VGG16 model. This allowed the model to adapt more effectively to domain-specific features in chest radiographs while still retaining the benefits of transfer learning. We tried several model runs with unfreezing the last 4, 8 or 15 layers. The model run with unfreezing the last 8 layers showed the best results we achieved using a VGG16 model: an overall accuracy of 91\% and also good results for the COVID class: precision 99\%, recall 82\% and f1-score 90\%. This outcome highlights that more aggressive fine-tuning does not always guarantee better performance and that a well-calibrated balance between fixed and trainable layers often yields the most robust results. The curves of loss and accuracy over the different epochs suggest that the model is converging. The accuracy increases and the loss decreases as expected which implies that we can trust in this model's predictions.
+
+In order to try to further improve the accuracy of the models predictions an advanced variation of the VGG16-based classification model has been tested. We incorporated a Squeeze-and-Excitation (SE) block, a well-known attention mechanism designed to enhance feature representations. The SE block is applied after the last convolutional layer of the VGG16 model. Its role is to recalibrate the channel-wise feature responses by learning per-channel weights, thus emphasizing informative features while suppressing less useful ones. This refinement helps the model focus on critical parts of the image, which is particularly valuable in medical image analysis like chest X-rays. These complex variations produced only marginal improvements over the previous best configuration, which was unfreezing of 8 layers. This suggests that while adding attention mechanisms like SE blocks and unfreezing more layers may enhance the model’s feature learning capacity, the benefit plateaus beyond a certain point, especially when earlier configurations were already well-optimized. 
+
+So we went back to the most promising model run so far, which used a simpler version of the VGG16 model with the last 8 layers unfrozen. As this is our most promesing model so far, we applied the Grad-CAM technique (Gradient-weighted Class Activation Mapping) to visually interpret the decisions made by a deep learning model. This technique shows which parts of the image influenced the model’s decision the most. Unfortunately this revealed dispersed and inconsistent attention. While some activations align with lung fields, many highlight irrelevant regions such as edges or corners, suggesting overfitting or sensitivity to non-diagnostic artifacts. However, certain images demonstrate reasonable focus on areas potentially indicating pathology (e.g., lung opacity).
+
+As the Grad-CAM showed that our most promising model does not only focus on the lung areas of the X-ray images, we repeated that model run but with additionally using attention masks. The Gradcam results showed better focus on the area of interest. However, the classification results were by far not as good as in the test without the attention masks. The result show varied performance across classes. The “COVID” class performed strongly with balanced precision (0.87) and recall (0.90), and a high F1-score of 0.88. But other classes e.g. the Normal” class achieved very low recall (0.07), resulting in a low F1-score of 0.13, indicating the model is cautious but misses many true “Normal” cases.
+
+%------------------------------------------------------------------------
+% Ensemble Model
+%------------------------------------------------------------------------
+
+\subsubsection {Ensemble Model} 
+
+\colorbox{yellow}{@SANIYA: Please write summary of findings with ensemble model!}
+As this is our best model, I think we should inlucde grad cam and the classification report as an image to this 3rd report (YB)
+
+
+\begin{figure}[ht] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{ensmeble.png}
+    \caption{GRADCAM ENSEMBLE}
+    \label{figures_report_2/ensmeble.png}
+\end{figure}
+
+Figure\ref{figures_report_2/ensmeble.png} shows that using both models we are now able to focus and predict better from within the lungs area.
 
 \subsection{Comparing the Results}
-To quantify the improvement, we evaluated the performance of both approaches using metrics such as accuracy, precision, recall, and F1-score. Here’s a simplified comparison:
-
 
 %------------------------------------------------------------------------
 % Chapter 4: Conclusion and Future Work
 %------------------------------------------------------------------------
-\section{Conclusion and Future Work}
+\section{Conclusions from the modelling}
 
-Some ideas:\\
-Draw a Conclusion from the previous chapter: \\
-Which is the model we chose? Why do we chose it? \\
-How can this model be used? What are the limitatios? \\
-What has someone to keep in mind, when using the model? 
+\subsection{Which model to chose?}
+The best results of each model type are presented in table \ref{tab:model_performance}. The overall accuracy is shown and the scores (precision, recall and f1-score) for the COVID-class. 
 
-Some notes taken during writing chapter 3 about modelling: 
-\begin{itemize}
-    \item Using full size images (299 x 299 pixels) and even reduced size (128 x 128 pixels) was not possible with (some?/ all?) machine learning models due to performance reasons. 
-    \item Performance issues: used a lot of RAM or even too  much RAM so that the system crashed. 
-    \item we had to use very small images (20x20 pixel) to get the machine learning models running. A disadvantage is that the greatly reduced pixel number leads to a loss of information in the X-ray images.
-    \item Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. 
-\end{itemize}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|l|}
+        \hline
+        \textbf{} & \textbf{Overall} & \multicolumn{3}{c|}{\textbf{COVID-class}} & \textbf{Information} \\
+        \textbf{} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{on Input Data} \\
+        \hline
+        \multicolumn{6}{|l|}{\textbf{Machine Learning Models}} \\
+        \hline
+        Logistic Regression & 0.74 & 0.52 & 0.56 & 0.54 & Hog features \\
+        Random Forest & 0.76 & 0.62 & 0.61 & 0.62 & Hog features \\
+        SVM & 0.57 & 0.45 & 0.43 & 0.44 & Images 128 x 128, 1000 per class \\
+        SVM & 0.77 & 0.59 & 0.61 & 0.60 & Hog features with PCA dimensionality reduction \\
+        XGBoost & 0.86 & 0.89 & 0.89 & 0.89 & Images 128 x 128 (all), without masks, no filters \\
+        MPL Classifier & 0.83 & 0.69 & 0.69 & 0.69 & ResNet features \\
+        \hline
+        \multicolumn{6}{|l|}{\textbf{Deep Learning Models}} \\
+        \hline
+        Self-build CNN & 0.92 & 0.93 & 0.98 & 0.95 &  \\
+        EfficientNet & 0.58 & 0.28 & 0.07 & 0.11 &  \\
+        InceptionV3 & 0.91 & 0.92 & 0.91 & 0.91 &  \\
+        DenseNet121 & 0.85 & 0.73 & 0.90 & 0.81 &  \\
+        VGG16 & 0.91 & 0.99 & 0.92 & 0.96 &  \\
+        Ensemble & 0.92 & 0.95 & 0.93 & 0.94 &  \\
+        \hline
+    \end{tabular}
+    \caption{Performance of Machine Learning and Deep Learning Models}
+    \label{tab:model_performance}
+\end{table}
+
+The first part of the project concentrated on using different machine learning models. Using ML models, we got the best results with a XGBoost model using 128 x 128 images without masks, no filter (Clahe, Gaussian Blur). The overall accuracy was 86\%. This model's classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score. 
+
+By using deep learning models we could further improve the accuracy of the predictions. The scores of runs with an InceptionV3 model looked very good. This model's best run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%). However further inspections of these model revealed that it as convergence problems. 
+
+We also achieved very good results with the VGG16 model. In addition to a high overall accuracy of 91\% and also good results for the COVID class: precision 99\%, recall 82\% and f1-score 90\%, the model showed sufficient convergence. Therefore, this seemed to be the best model and could go for it. Unfortunately a Grad-CAM analysis showed that our most promising model does not only focus on the lung areas of the X-ray images. 
+
+Since we had not yet found a model that gives satisfactory results in terms of accuracy, convergence and focus on the right areas of the images, we tried an ensemble model. 
+
+\colorbox{yellow}{@SANIYA: Please write a conclusion why we chose the ensemble model!}
+
+
+\subsection{Summary of further conclusions from the modelling}
+This chapter summariezes some of the findings from our various model runs. 
+
+From the various runs with different machine learning models we came to the conclusion, that it is not possible to use fullsize images (299 x 299 pixels) with these models. 
+When trying to use the fullsize images, we had severe performance issues as the trainig comsumed too much RAM which even led to a crash of the model run. Therefore, the image size had to be reduced to e.g. 128 x 128 pixels and for some models even more drastically to even 20 x 20 pixels. A disadvantage of the intensivly reduced pixel number leads to a loss of information in the X-ray images, which could influence the model performance. 
+
+Additionally, for some machine learning models, the number of images used for training also had to be reduced due to performance issues. This reduced the variety of images involved in the training of the model. 
+
+Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception too this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
+
+Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86% and surprisingly good predictions for the COVID class of 89%). 
+The advantages of these machine learning models were: 
+* As they need limited computational resources we could run them on our local computers.
+* As training is much faster than using deep learning models, more runs with different parameters and input data could be tested. 
+
+Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features. Furthermore, less "man power" is needed for the preprocessing of the images. 
+
+Our tests with several deep learning models showed that we could further imporve the  accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using this models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal using a model with the highest possible accuracy we assume that the higher computational costs and the more time-consuming training of a deep learning model is accaptable. 
+
+
 
 
 %------------------------------------------------------------------------
