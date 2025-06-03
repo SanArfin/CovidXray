@@ -26,4 +26,4 @@ jobs:
 
     - name: Run Ensemble Model script
       working-directory: notebooks
-      run: python ENSEMBLE_MODEL.py
+      run: python ensemble_model.py
