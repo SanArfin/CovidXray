@@ -416,6 +416,15 @@ Softmax predictions from both models are averaged during inference:
 
 This ensemble is parameter-free and does not require additional training. It effectively blends model outputs and improves robustness, especially when the base models have diverse architectural characteristics.The final voting-based classification model was saved as \texttt{voting\_ensemble\_model.keras} and was subsequently used for generating class activation maps (Grad-CAM) to visualize model attention.
 
+Figure\ref{fig: Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model:
+\begin{figure}%[h!] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures_report_2/cm_cr_ensemble.png}
+    \caption{Evaluation for ensemble}
+    \label{fig: Confusion matrix for ensemble}
+\end{figure}\\
+
+
 \underline{Grad-CAM and Localization Evaluation}
 
 Grad-CAM visualizations were used to evaluate model interpretability. Observations include:
@@ -577,8 +586,9 @@ The voting ensemble model\ref{tab:ensemble_performance}, though slightly lower i
 \begin{itemize}
     \item Accuracy: 0.9203 → Very high, showing robust performance.
     \item Precision \& Recall: High across all classes, especially COVID and Viral Pneumonia.Slight recall drop for Lung\_Opacity (0.85), indicating some missed true positives.
-    \item Confusion Matrix observations:Normal misclassified as Lung\_Opacity: 47 times.Lung\_Opacity misclassified as Normal: 121 times.Suggests confusion between Normal and Lung Opacity, likely due to subtle visual overlaps.
+    \item Confusion Matrix observations:Normal misclassified as Lung\_Opacity: 47 times.Lung\_Opacity misclassified as Normal: 121 times. Suggests confusion between Normal and Lung Opacity, likely due to subtle visual overlaps.
 \end{itemize}
+
 
 \underline{Confidence Analysis (Subfigure a, top-left)}
 Per-class Average Confidence:
