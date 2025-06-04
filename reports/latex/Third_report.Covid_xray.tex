@@ -13,7 +13,7 @@
 \usepackage{subfig}
 %\usepackage{subcaption}
 
-\graphicspath{{../figures/figures_report_3/}}
+\graphicspath{{../figures/}}
 
 \title{ANALYSIS OF COVID-19 CHEST X-RAYS: \\Report 3: Final Report}
 \author{Saniya Arfin, Yvonne Breitenbach, Alexandru Buzgan}
@@ -296,8 +296,7 @@ Figure \ref{fig:Visualization of Gradcam} compares the interpretability and perf
 \begin{itemize}
     \item A standard VGG16 model achieved 91\% accuracy but displayed diffuse attention patterns, occasionally focusing outside the lung region.
     \item A custom CNN using additional segmentation mask input achieved 92\% accuracy and showed improved focus within the lungs.
-     \item An enhanced VGG16 model that applied attention to mask regions delivered the highest single-model accuracy of 94\%, with strong alignment to pathology.
-     \item An enhanced VGG16 model that applied attention to mask regions delivered the highest single-model accuracy of 94\%, with strong alignment to pathology.
+    \item An enhanced VGG16 model that applied attention to mask regions delivered the highest single-model accuracy of 94\%, with strong alignment to pathology.
      \item Finally, a voting ensemble model that combines predictions from all three approaches achieved a balanced accuracy of 92\%, leveraging their complementary strengths.
 \end{itemize}
 
@@ -305,7 +304,7 @@ Therefore the ensemble model offers more reliable and interpretable insights int
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
-    \includegraphics[width=1.0\linewidth]{figures_report_2/gradcam_final.png}
+    \includegraphics[width=1.0\linewidth]{figures_report_3/gradcam_final.png}
     \caption{Visualization Gradcam Improvement}
     \label{fig:Visualization of Gradcam}
 \end{figure}
@@ -317,6 +316,33 @@ Therefore the ensemble model offers more reliable and interpretable insights int
 % Chapter 4: Conclusion and Future Work
 %------------------------------------------------------------------------
 \section{Conclusions from the modelling}
+
+
+%------------------------------------------------------------------------
+% Chapter 4.1: Machine Learning vs. Deep Learning for classification of chest X-ray images
+%------------------------------------------------------------------------
+
+\subsection{Machine Learning vs. Deep Learning for classification of chest X-ray images}
+
+From the various runs with different machine learning models we came to the conclusion, that it is not possible to use fullsize images (299 x 299 pixels) with these models. 
+When trying to use the fullsize images, we had severe performance issues as the trainig comsumed too much RAM which even led to a crash of the model run. Therefore, the image size had to be reduced to e.g. 128 x 128 pixels and for some models even more drastically to even 20 x 20 pixels. A disadvantage of the intensivly reduced pixel number leads to a loss of information in the X-ray images, which could influence the model performance. 
+
+Additionally, for some machine learning models, the number of images used for training also had to be reduced due to performance issues. This reduced the variety of images involved in the training of the model. 
+
+Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception too this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
+
+Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86\% and surprisingly good predictions for the COVID class of 89\%). 
+The advantages of these machine learning models were: 
+* As they need limited computational resources we could run them on our local computers.
+* As training is much faster than using deep learning models, more runs with different parameters and input data could be tested. 
+
+Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features. Furthermore, less "man power" is needed for the preprocessing of the images. 
+
+Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using these models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal using a model with the highest possible accuracy we assume that the higher computational costs and the more time-consuming training of a deep learning model is acceptable.\\
+
+%------------------------------------------------------------------------
+% Chapter 4.2: Which model to
+%------------------------------------------------------------------------
 
 \subsection{Which model to chose?}
 The best results of each model type are presented in table \ref{tab:model_performance}. The overall accuracy is shown and the scores (precision, recall and f1-score) for the COVID-class. 
@@ -344,45 +370,25 @@ The best results of each model type are presented in table \ref{tab:model_perfor
         EfficientNet & 0.58 & 0.28 & 0.07 & 0.11 &  \\
         InceptionV3 & 0.91 & 0.92 & 0.91 & 0.91 &  \\
         DenseNet121 & 0.85 & 0.73 & 0.90 & 0.81 &  \\
-        VGG16 & 0.91 & 0.99 & 0.92 & 0.96 &  \\
+        VGG16 & 0.94 & 0.97 & 0.99 & 0.98 &  \\
         Ensemble & 0.92 & 0.95 & 0.93 & 0.94 &  \\
         \hline
     \end{tabular}
     } % end resizebox
-    \caption{Performance of Machine Learning and Deep Learning Models}
+    \caption{Performance of the best models for each model type}
     \label{tab:model_performance}
 \end{table}
 
 The first part of the project concentrated on using different machine learning models. Using ML models, we got the best results with a XGBoost model using 128 x 128 images without masks, no filter (Clahe, Gaussian Blur). The overall accuracy was 86\%. This model's classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score. 
 
-By using deep learning models we could further improve the accuracy of the predictions. The scores of runs with an InceptionV3 model looked very good. This model's best run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%). However further inspections of these model revealed that it as convergence problems. 
+By using deep learning models we could further improve the accuracy of the predictions. The scores of runs with an InceptionV3 model looked very good. This model's best run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%). However, further inspections of these model revealed that it as convergence problems. 
 
 We also achieved very good results with the VGG16 model. In addition to a high overall accuracy of 91\% and also good results for the COVID class: precision 99\%, recall 82\% and f1-score 90\%, the model showed sufficient convergence. Therefore, this seemed to be the best model and could go for it. Unfortunately a Grad-CAM analysis showed that our most promising model does not only focus on the lung areas of the X-ray images. 
 
-Since we had not yet found a model that gives satisfactory results in terms of accuracy, convergence and focus on the right areas of the images, we tried an ensemble model. 
+By using attention masks, this VGG16 model improved its focus on lung areas in X-ray images, enhancing classification accuracy. It achieved 94\% overall accuracy, with strong performance in COVID (F1-score: 0.98), Viral Pneumonia (0.98), Normal (0.95), and Lung Opacity (0.91). The macro-averaged F1-score of 0.95 confirmed balanced effectiveness across various pathologies.
 
 
-
-\subsection{Summary of further conclusions from the modelling}
-This chapter summariezes some of the findings from our various model runs. 
-
-From the various runs with different machine learning models we came to the conclusion, that it is not possible to use fullsize images (299 x 299 pixels) with these models. 
-When trying to use the fullsize images, we had severe performance issues as the trainig comsumed too much RAM which even led to a crash of the model run. Therefore, the image size had to be reduced to e.g. 128 x 128 pixels and for some models even more drastically to even 20 x 20 pixels. A disadvantage of the intensivly reduced pixel number leads to a loss of information in the X-ray images, which could influence the model performance. 
-
-Additionally, for some machine learning models, the number of images used for training also had to be reduced due to performance issues. This reduced the variety of images involved in the training of the model. 
-
-Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception too this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
-
-Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86\% and surprisingly good predictions for the COVID class of 89\%). 
-The advantages of these machine learning models were: 
-* As they need limited computational resources we could run them on our local computers.
-* As training is much faster than using deep learning models, more runs with different parameters and input data could be tested. 
-
-Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features. Furthermore, less "man power" is needed for the preprocessing of the images. 
-
-Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using these models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal using a model with the highest possible accuracy we assume that the higher computational costs and the more time-consuming training of a deep learning model is acceptable.\\
-
-\begin{table}[H]
+\begin{table}[hb]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -411,8 +417,12 @@ The voting ensemble model\ref{tab:ensemble_performance}, though slightly lower i
 \textbf{Therefore, the voting ensemble is the recommended model for practical deployment, balancing accuracy, interpretability, and robustness.}
 
 
+
+
+
+
 %------------------------------------------------------------------------
-% Chapter 5: Discussion
+% Chapter 5: Discussion - Reflecting on our project
 %------------------------------------------------------------------------
 \section{Discussion - Reflecting on our project}
 
@@ -440,7 +450,7 @@ Moderate confidence for Lung\_Opacity — matches the lower recall from the conf
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
-    \includegraphics[width=1.0\linewidth]{figures_report_2/error_analysis.png}
+    \includegraphics[width=1.0\linewidth]{figures_report_3/error_analysis.png}
     \caption{Visualization of model error analysis}
     \label{fig:error_analysis}
 \end{figure}
@@ -471,7 +481,7 @@ For predicted confidences >0.6, the model is well-calibrated (close to diagonal)
 At \~0.5 confidence, accuracy drops, showing lower trustworthiness for moderate scores.
 
 
-\subsubsection{Summary & Recommendations}
+\subsection{Summary \& Recommendations}
 \begin{table}[ht]
 \centering
 \renewcommand{\arraystretch}{1.4}
@@ -531,9 +541,6 @@ Lists all the sourced literature and references cited throughout the report.
 %------------------------------------------------------------------------
 \section{Appendices}
 
-??? \\
-Gantt diagram. \\
-Description of code files. \\
 You can find the GitHub repository belonging to this project here: 
 \url{https://github.com/DataScientest-Studio/mar25-bds_analysis-of-covid-19-chest-x-rays} 
 
