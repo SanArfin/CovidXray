@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage{float}
-\usepackage{hyperref}
+\usepackage{hyperref} % Enables clickable links
 \usepackage{graphicx} % Required for inserting images
 \usepackage{multirow} % required for advanced tables
 \usepackage[english]{babel}
@@ -12,6 +12,7 @@
 \usepackage{color}
 \usepackage{subfig}
 %\usepackage{subcaption}
+\usepackage{tocbibind} % Adds Bibliography to TOC automatically
 
 \graphicspath{{../figures/figures_report_3/}}
 
@@ -34,7 +35,7 @@
 Medical imaging and particularly X-rays are one of the most important tools available to modern medicine in diagnosis and treatment of various diseases, due to their wide availability and cost-effectiveness.  The COVID-19 pandemic has highlighted the global need for such reliable, and scalable diagnostic means. In the case of COVID-19, the symptoms are similar to respiratory viral infections, and respiratory problems becomes the principal source of morbidity and mortality in advanced cases. Therefore, a quick and accurate detection of the virus infection could make the difference when fighting an epidemic of such proportions.\\
 An important step in the diagnosis process is the interpretation of the image. This requires highly specialized professionals and it could be in many cases the bottleneck which prevents the quick diagnosis of large number of cases of respiratory diseases. Since this is basically a classification problem, Machine Learning and especially its subcategory Deep learning could prove to be a useful tool in this endeavor. Various Deep Learning models have demonstrated remarkable performance in image classification tasks, such as medical imaging diagnostics. Leveraging deep learning to analyze chest X-rays may provide an efficient and accurate method for detecting COVID-19 in patients, especially when traditional testing methods are not feasible.\\
 This project explores the use of various models for classifying chest X-ray images into different categories, one of them being COVID-19. By training them on labeled X-ray datasets, the goal is to develop a reliable model that can assist healthcare professionals in identifying COVID-19 cases quickly and accurately.\\
-As training data we use publicly available sets of X-ray images in a common image file format(PNG). The images were collected from different sources by a team of researchers from Qatar University, Doha, Qatar, and the University of Dhaka, Bangladesh along with their collaborators from Pakistan and Malaysia in collaboration with medical doctors. The sources of the images is mentioned in the reference section. The images are pre-labeled and contain:
+As training data we use publicly available sets of X-ray images in a common image file format(PNG). The images were collected from different sources by a team of researchers from Qatar University, Doha, Qatar, and the University of Dhaka, Bangladesh along with their collaborators from Pakistan and Malaysia in collaboration with medical doctors \cite{chowdhury2020} \cite{rahman2020}. The sources of the images is mentioned in the reference section. The images are pre-labeled and contain:
 \begin{itemize}
     \item X-ray images of healthy lungs (labeled 'Normal').
     \item COVID-19 positive cases
@@ -72,26 +73,26 @@ The metadata files contain the following information:
 
 COVID-19 images:
 \begin{itemize}
-    \item 2473 images from padchest dataset[1]
-    \item 183 images from a Germany medical school[2].
-    \item 559 images from SIRM, Github, Kaggle and Tweeter[3,4,5,6]
-    \item 400 images from another Github source[7]
+    \item 2473 images from padchest dataset \cite{url_1}
+    \item 183 images from a Germany medical school \cite{url_2}
+    \item 559 images from SIRM, Github, Kaggle and Tweeter \cite{url_3}, \cite{url_4}, \cite{url_5}, \cite{url_6}
+    \item 400 images from another Github source \cite{url_7}
 \end{itemize}
 
 Lung Opacity images:
 \begin{itemize}
-    \item all images are collected from Radiological Society of North America (RSNA) [8]
+    \item all images are collected from Radiological Society of North America (RSNA) \cite{url_8}
 \end{itemize}
 
 Normal images:
 \begin{itemize}
-    \item 8851 images are collected from Radiological Society of North America RSNA [8].
-    \item 1341 images are from Kaggle [9].
+    \item 8851 images are collected from Radiological Society of North America RSNA \cite{url_8}.
+    \item 1341 images are from Kaggle \cite{url_9}.
 \end{itemize}
 
 Viral Pneumonia images:
 \begin{itemize}
-    \item all the images are collected from  the Chest X-Ray Images (pneumonia) database [9]
+    \item all the images are collected from  the Chest X-Ray Images (pneumonia) database \cite{url_9}
 \end{itemize}
 
 An example of each image is shown below:
@@ -144,7 +145,7 @@ The mask images isolate the lung area from the X-ray image. Each X-ray image has
 \end{figure}
 
 A first analysis of the images themselves shows that some information in the metadata files is wrong. The size of the images vary, as shown in the table below:
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \begin{tabular}{|c|c|c|}
         \hline
@@ -159,7 +160,7 @@ A first analysis of the images themselves shows that some information in the met
 Another problem is the format of the images: some are in RGB not grayscale. We had to take this into account during the data preparation phase.\\
 The solution for the different sizes of the maska and images was a simple resizing of the masks to 299 x 299 pixel by using the resize-function of the OpenCV Python library. As interpolation method we used “cv2.INTER CUBIC”. This can be seen in detail in the overlay of some resized masks and X-ray images in figure \ref{fig:overlay_masks_images}.
 
-\begin{figure}[h!]
+\begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{overlay_masks_images.png}
     \caption{Overlay of resized masks and X-ray images.}
@@ -177,7 +178,7 @@ To minimize source-related bias and standardize image quality across the dataset
 
 Figures \ref{fig:KDE_pre_post_normalization_class} and \ref{fig:KDE_pre_post_normalization_URL} show the effect of the normalization. 
 
-\begin{figure}[h!] % the [h!] helps force it "here"
+\begin{figure}[H] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{Screenshot 2025-04-21 223200.png}
     \caption{Distribution of mean and std of pixel intensities of the X-ray images before and after normalization by classes}
@@ -419,7 +420,7 @@ This ensemble is parameter-free and does not require additional training. It eff
 Figure\ref{fig: Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model:
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
-    \includegraphics[width=0.5\linewidth]{figures_report_2/cm_cr_ensemble.png}
+    \includegraphics[width=0.5\linewidth]{cm_cr_ensemble.png}
     \caption{Evaluation for ensemble}
     \label{fig: Confusion matrix for ensemble}
 \end{figure}\\
@@ -589,7 +590,6 @@ The voting ensemble model\ref{tab:ensemble_performance}, though slightly lower i
     \item Confusion Matrix observations:Normal misclassified as Lung\_Opacity: 47 times.Lung\_Opacity misclassified as Normal: 121 times. Suggests confusion between Normal and Lung Opacity, likely due to subtle visual overlaps.
 \end{itemize}
 
-
 \underline{Confidence Analysis (Subfigure a, top-left)}
 Per-class Average Confidence:
 \begin{itemize}
@@ -685,33 +685,20 @@ Working within Google Colab imposed memory and runtime constraints. Model checkp
 Occasional interruptions in access to cloud resources, syncing issues with Google Drive, and the complexity of managing multiple model files and configurations also added to the logistical load. Moreover, integrating intermediate results from separate models into a unified evaluation pipeline required careful coordination and documentation.
 
 
-
-%------------------------------------------------------------------------
-% Chapter 6: References
-%------------------------------------------------------------------------
-\section{References}
-
--M.E.H. Chowdhury, T. Rahman, A. Khandakar, R. Mazhar, M.A. Kadir, Z.B. Mahbub, K.R. Islam, M.S. Khan, A. Iqbal, N. Al-Emadi, M.B.I. Reaz, M. T. Islam, “Can AI help in screening Viral and COVID-19 pneumonia?” IEEE Access, Vol. 8, 2020, pp. 132665 - 132676.\\
--Rahman, T., Khandakar, A., Qiblawey, Y., Tahir, A., Kiranyaz, S., Kashem, S.B.A., Islam, M.T., Maadeed, S.A., Zughaier, S.M., Khan, M.S. and Chowdhury, M.E., 2020. Exploring the Effect of Image Enhancement Techniques on COVID-19 Detection using Chest X-ray Images. arXiv preprint arXiv:2012.02238. 
-
 %------------------------------------------------------------------------
 % Chapter 7: Appendices
 %------------------------------------------------------------------------
 \section{Appendices}
 
-You can find the GitHub repository belonging to this project here: 
+You can find the GitHub repository belonging to this project here: \\
 \url{https://github.com/DataScientest-Studio/mar25-bds_analysis-of-covid-19-chest-x-rays}\\
-\url{https://bimcv.cipf.es/bimcv-projects/bimcv-covid19/#1590858128006-9e640421-6711}\\
-]\url{https://github.com/ml-workgroup/covid-19-image-repository/tree/master/png}\\
-\url{https://sirm.org/category/senza-categoria/covid-19/}\\
-\url{https://eurorad.org}\\
-\url{https://github.com/ieee8023/covid-chestxray-dataset}\\
-\url{https://figshare.com/articles/COVID-19_Chest_X-Ray_Image_Repository/12580328}\\
-\url{https://github.com/armiro/COVID-CXNet}\\  
-\url{https://www.kaggle.com/c/rsna-pneumonia-detection-challenge/data}\\
-\url{https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia}\\
 
 
+%------------------------------------------------------------------------
+% References
+%------------------------------------------------------------------------
 
+\bibliographystyle{IEEEtran} % Choose citation style
+\bibliography{references}    % Connect to your BibTeX file
 
 \end{document}
