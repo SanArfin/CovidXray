@@ -59,8 +59,8 @@ The source of the dataset is \href{https://www.kaggle.com/tawsifurrahman/covid19
     \item a set of 6012 mask images for the Lung Opacity images.
     \item a set of 10192  X-ray images of Normal (healthy) cases.
     \item a set of 10192 mask images for the Normal images.
-    \item a set of 3616  X-ray images of Viral Pneumonia positive cases.
-    \item a set of 3616 mask images for the Viral Pneumonia images.
+    \item a set of 1345  X-ray images of Viral Pneumonia positive cases.
+    \item a set of 1345 mask images for the Viral Pneumonia images.
     \item  4 Excel files containing metadata for each set of images
 \end{itemize}
 
@@ -166,6 +166,8 @@ The solution for the different sizes of the maska and images was a simple resizi
     \caption{Overlay of resized masks and X-ray images.}
     \label{fig:overlay_masks_images}
 \end{figure}   
+
+We also noticed a class imbalance in the data. The distribution between the classes is very unequal, the 'Normal' class (10192 images) is almost 8 times more numerous than the 'Viral Pneumonia' class. The other 2 classes have also significantly less images. Therefore, we needed to apply data augmentation(albumentations) for minority classes. This ensures the model does not become biased toward the majority classes and maintains fair performance across all categories.
 
 The next step in our analysis were the exploratory data visualizations. We created class-wise and source-wise smoothed Kernel Density Estimate (KDE) plots for mean pixel intensities and for standard deviations (std) of pixel intensities. The conclusion was that different classes show distinct mean intensity patterns. COVID images tend to be brighter on average, potentially due to artifacts or progression patterns, while Lung Opacity images are darker. Also the images have significantly different mean and standard deviation values of pixel intensities across the four classes. This variation reflects inherent differences in image acquisition conditions or dataset characteristics (for example, images taken with different machines or in different settings may have varying brightness and contrast levels), which could introduce bias into any Machine Learning model.\\
 To minimize source-related bias and standardize image quality across the dataset, we applied the following preprocessing steps:
