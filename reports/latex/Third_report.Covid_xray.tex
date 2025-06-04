@@ -13,7 +13,7 @@
 \usepackage{subfig}
 %\usepackage{subcaption}
 
-\graphicspath{{../figures/}}
+\graphicspath{{../figures/figures_report_3/}}
 
 \title{ANALYSIS OF COVID-19 CHEST X-RAYS: \\Report 3: Final Report}
 \author{Saniya Arfin, Yvonne Breitenbach, Alexandru Buzgan}
@@ -30,21 +30,168 @@
 % ------------------------------------------------------------------------
 % Chapter 1: Introduction
 %------------------------------------------------------------------------
-\section{Introduction}
-Some ideas: \\
-Background and Project Motivation\\
-Describe the context of the project, the public health importance of chest X-ray analysis, and the impetus for the study.\\
-Outlines the background, motivation, objectives, scope, and structural layout of the report.\\
-
-
+\section{Background and Project Motivation}
+Medical imaging and particularly X-rays are one of the most important tools available to modern medicine in diagnosis and treatment of various diseases, due to their wide availability and cost-effectiveness.  The COVID-19 pandemic has highlighted the global need for such reliable, and scalable diagnostic means. In the case of COVID-19, the symptoms are similar to respiratory viral infections, and respiratory problems becomes the principal source of morbidity and mortality in advanced cases. Therefore, a quick and accurate detection of the virus infection could make the difference when fighting an epidemic of such proportions.\\
+An important step in the diagnosis process is the interpretation of the image. This requires highly specialized professionals and it could be in many cases the bottleneck which prevents the quick diagnosis of large number of cases of respiratory diseases. Since this is basically a classification problem, Machine Learning and especially its subcategory Deep learning could prove to be a useful tool in this endeavor. Various Deep Learning models have demonstrated remarkable performance in image classification tasks, such as medical imaging diagnostics. Leveraging deep learning to analyze chest X-rays may provide an efficient and accurate method for detecting COVID-19 in patients, especially when traditional testing methods are not feasible.\\
+This project explores the use of various models for classifying chest X-ray images into different categories, one of them being COVID-19. By training them on labeled X-ray datasets, the goal is to develop a reliable model that can assist healthcare professionals in identifying COVID-19 cases quickly and accurately.\\
+As training data we use publicly available sets of X-ray images in a common image file format(PNG). The images were collected from different sources by a team of researchers from Qatar University, Doha, Qatar, and the University of Dhaka, Bangladesh along with their collaborators from Pakistan and Malaysia in collaboration with medical doctors. The sources of the images is mentioned in the reference section. The images are pre-labeled and contain:
+\begin{itemize}
+    \item X-ray images of healthy lungs (labeled 'Normal').
+    \item COVID-19 positive cases
+    \item  Viral Pneumonia positive cases.
+    \item  Lung Opacity positive cases.
+\end{itemize}
+ 
+Our models will have to classify the images and especially detect the COVID-19 cases reliably. In this project we tested several Machine Learning and Deep Learning models in order to establish the best one for this task. We could not be exhaustive in our search, rather we selected the models with the best chances of obtaining a good result.\\
+In the first step we tried to understand the dataset content and distribution, we identified and tried to address the data imbalance, biases and noises. We tried a few Machine Learning algorithms and then moved to Deep Learning algorithms, selecting the best one. We tried also pre-trained models specialized in image recognition. The metrics used for selection are the Confusion Matrix, which tells us how many images were correctly classified and the Classification Report which provides useful scores, most importantly the f1 score.\\
+This report will detail our approach to this problem. We will start with a short description of the dataset. We will continue with a short list of the Machine Learning models we tested and a short description of hyper-parameter selection. Then we will continue with the Deep learning models we approached (including the pre-trained ones we used for transfer learning), we will detail the feature selection and finally draw conclusions and discuss about future work and possible improvements.  
 
 %------------------------------------------------------------------------
 % Chapter 2: Dataset Overview
 %------------------------------------------------------------------------
 \section{Dataset Overview - Description of the "Chest-X-Ray" Dataset}
-Some ideas: \\
-Describes the "Chest-X-Ray" dataset in detail, discussing its composition, class imbalance issues, and data quality challenges, along with the preprocessing techniques applied.\\
-source of the data\\
+The source of the dataset is \href{https://www.kaggle.com/tawsifurrahman/covid19-radiography-database} {Kaggle}. The size of the dataset is 1.15GB. It contains the following items:
+\begin{itemize}
+    \item a set of 3616  X-ray images of COVID positive cases.
+    \item a set of 3616 mask images for the COVID images.
+    \item a set of 6012  X-ray images of Lung Opacity positive cases.
+    \item a set of 6012 mask images for the Lung Opacity images.
+    \item a set of 10192  X-ray images of Normal (healthy) cases.
+    \item a set of 10192 mask images for the Normal images.
+    \item a set of 3616  X-ray images of Viral Pneumonia positive cases.
+    \item a set of 3616 mask images for the Viral Pneumonia images.
+    \item  4 Excel files containing metadata for each set of images
+\end{itemize}
+
+The metadata files contain the following information:
+\begin{itemize}
+    \item image size: all images sizes are mentioned here to be 256x256 pixels. However, the analysis showed that this is not accurate
+    \item images format: all images are in the PNG format.
+    \item image source: there are multiple sources for the images, as described below.
+\end{itemize}
+
+COVID-19 images:
+\begin{itemize}
+    \item 2473 images from padchest dataset[1]
+    \item 183 images from a Germany medical school[2].
+    \item 559 images from SIRM, Github, Kaggle and Tweeter[3,4,5,6]
+    \item 400 images from another Github source[7]
+\end{itemize}
+
+Lung Opacity images:
+\begin{itemize}
+    \item all images are collected from Radiological Society of North America (RSNA) [8]
+\end{itemize}
+
+Normal images:
+\begin{itemize}
+    \item 8851 images are collected from Radiological Society of North America RSNA [8].
+    \item 1341 images are from Kaggle [9].
+\end{itemize}
+
+Viral Pneumonia images:
+\begin{itemize}
+    \item all the images are collected from  the Chest X-Ray Images (pneumonia) database [9]
+\end{itemize}
+
+An example of each image is shown below:
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{COVID-1023.png}
+        \caption{COVID}
+        \label{fig:COVID-1023.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{LungOpacity-1005.png}
+        \caption{Lung Opacity}
+        \label{fig:LungOpacity-1005.png}
+    \end{minipage}
+    \begin{minipage}[t]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Normal-10023.png}
+        \caption{Normal}
+        \label{fig:Normal-10023.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{ViralPneumonia-1020.png}
+        \caption{Viral Pneumonia}
+        \label{fig:ViralPneumonia-1020.png}
+    \end{minipage}
+\end{figure}
+
+The mask images isolate the lung area from the X-ray image. Each X-ray image has a corresponding mask which, if applied on the X-ray should leave only the lungs relevant area visible:
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{COVID-101.png}
+        \caption{Image}
+        \label{fig:COVID-101.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{COVIDmsk-101.png}
+        \caption{Mask}
+        \label{fig:COVIDmsk-101.png}
+    \end{minipage}  
+\end{figure}
+
+A first analysis of the images themselves shows that some information in the metadata files is wrong. The size of the images vary, as shown in the table below:
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Image size} & \textbf{Number of X-ray images} & \textbf{Number of lung masks} \\ \hline
+        299 x 299 x 3 & 140 &  \\ \hline
+        299 x 299 & 21025 &  \\ \hline \hline
+        256 x 256 x 3 &  & 21165 \\ \hline
+    \end{tabular}
+    \caption{Size of X-ray images and lung masks}
+    \label{tab:iamges_sizes}
+\end{table}
+Another problem is the format of the images: some are in RGB not grayscale. We had to take this into account during the data preparation phase.\\
+The solution for the different sizes of the maska and images was a simple resizing of the masks to 299 x 299 pixel by using the resize-function of the OpenCV Python library. As interpolation method we used “cv2.INTER CUBIC”. This can be seen in detail in the overlay of some resized masks and X-ray images in figure \ref{fig:overlay_masks_images}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{overlay_masks_images.png}
+    \caption{Overlay of resized masks and X-ray images.}
+    \label{fig:overlay_masks_images}
+\end{figure}   
+
+The next step in our analysis were the exploratory data visualizations. We created class-wise and source-wise smoothed Kernel Density Estimate (KDE) plots for mean pixel intensities and for standard deviations (std) of pixel intensities. The conclusion was that different classes show distinct mean intensity patterns. COVID images tend to be brighter on average, potentially due to artifacts or progression patterns, while Lung Opacity images are darker. Also the images have significantly different mean and standard deviation values of pixel intensities across the four classes. This variation reflects inherent differences in image acquisition conditions or dataset characteristics (for example, images taken with different machines or in different settings may have varying brightness and contrast levels), which could introduce bias into any Machine Learning model.\\
+To minimize source-related bias and standardize image quality across the dataset, we applied the following preprocessing steps:
+\begin{itemize}
+    \item Grayscale Conversion (L-channel): All images were converted to grayscale using OpenCV (RGB conversion to L).
+    \item Contrast Enhancement with Contrast Limited Adaptive Histogram Equalization (CLAHE): Applied CLAHE to help standardize the contrast across images.
+    \item Lung Region Isolation: By applying the binary mask to the image after CLAHE processing, we ensured that only the lung regions are enhanced and normalized, while irrelevant areas like the background are not affected.
+     \item Pixel Value Normalization: Ensures that all images lie within the same range, preventing models from learning biased patterns based on intensity differences.
+\end{itemize}
+
+Figures \ref{fig:KDE_pre_post_normalization_class} and \ref{fig:KDE_pre_post_normalization_URL} show the effect of the normalization. 
+
+\begin{figure}[h!] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{Screenshot 2025-04-21 223200.png}
+    \caption{Distribution of mean and std of pixel intensities of the X-ray images before and after normalization by classes}
+    \label{fig:KDE_pre_post_normalization_class}
+\end{figure}
+
+\begin{figure}[h!] % the [h!] helps force it "here"
+    \centering
+    \includegraphics[width=1.0\linewidth]{Screenshot 2025-04-21 223207.png}
+    \caption{Distribution of mean and std of pixel intensities of the X-ray images before and after normalization by sources}
+    \label{fig:KDE_pre_post_normalization_URL}
+\end{figure}
+
+The preprocessed images are converted to numpy arrays and stored as .npz files for fast loading during training and evaluation.
 
 
 %------------------------------------------------------------------------
@@ -304,7 +451,7 @@ Therefore the ensemble model offers more reliable and interpretable insights int
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
-    \includegraphics[width=1.0\linewidth]{figures_report_3/gradcam_final.png}
+    \includegraphics[width=1.0\linewidth]{gradcam_final.png}
     \caption{Visualization Gradcam Improvement}
     \label{fig:Visualization of Gradcam}
 \end{figure}
@@ -450,7 +597,7 @@ Moderate confidence for Lung\_Opacity — matches the lower recall from the conf
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
-    \includegraphics[width=1.0\linewidth]{figures_report_3/error_analysis.png}
+    \includegraphics[width=1.0\linewidth]{error_analysis.png}
     \caption{Visualization of model error analysis}
     \label{fig:error_analysis}
 \end{figure}
@@ -534,7 +681,8 @@ Occasional interruptions in access to cloud resources, syncing issues with Googl
 %------------------------------------------------------------------------
 \section{References}
 
-Lists all the sourced literature and references cited throughout the report.
+-M.E.H. Chowdhury, T. Rahman, A. Khandakar, R. Mazhar, M.A. Kadir, Z.B. Mahbub, K.R. Islam, M.S. Khan, A. Iqbal, N. Al-Emadi, M.B.I. Reaz, M. T. Islam, “Can AI help in screening Viral and COVID-19 pneumonia?” IEEE Access, Vol. 8, 2020, pp. 132665 - 132676.\\
+-Rahman, T., Khandakar, A., Qiblawey, Y., Tahir, A., Kiranyaz, S., Kashem, S.B.A., Islam, M.T., Maadeed, S.A., Zughaier, S.M., Khan, M.S. and Chowdhury, M.E., 2020. Exploring the Effect of Image Enhancement Techniques on COVID-19 Detection using Chest X-ray Images. arXiv preprint arXiv:2012.02238. 
 
 %------------------------------------------------------------------------
 % Chapter 7: Appendices
@@ -542,7 +690,18 @@ Lists all the sourced literature and references cited throughout the report.
 \section{Appendices}
 
 You can find the GitHub repository belonging to this project here: 
-\url{https://github.com/DataScientest-Studio/mar25-bds_analysis-of-covid-19-chest-x-rays} 
+\url{https://github.com/DataScientest-Studio/mar25-bds_analysis-of-covid-19-chest-x-rays}\\
+\url{https://bimcv.cipf.es/bimcv-projects/bimcv-covid19/#1590858128006-9e640421-6711}\\
+]\url{https://github.com/ml-workgroup/covid-19-image-repository/tree/master/png}\\
+\url{https://sirm.org/category/senza-categoria/covid-19/}\\
+\url{https://eurorad.org}\\
+\url{https://github.com/ieee8023/covid-chestxray-dataset}\\
+\url{https://figshare.com/articles/COVID-19_Chest_X-Ray_Image_Repository/12580328}\\
+\url{https://github.com/armiro/COVID-CXNet}\\  
+\url{https://www.kaggle.com/c/rsna-pneumonia-detection-challenge/data}\\
+\url{https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia}\\
+
+
 
 
 \end{document}
