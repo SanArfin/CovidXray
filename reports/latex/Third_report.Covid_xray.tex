@@ -32,43 +32,48 @@
 % Chapter 1: Introduction
 %------------------------------------------------------------------------
 \section{Background and Project Motivation}
-Medical imaging and particularly X-rays are one of the most important tools available to modern medicine in diagnosis and treatment of various diseases, due to their wide availability and cost-effectiveness.  The COVID-19 pandemic has highlighted the global need for such reliable, and scalable diagnostic means. In the case of COVID-19, the symptoms are similar to respiratory viral infections, and respiratory problems becomes the principal source of morbidity and mortality in advanced cases. Therefore, a quick and accurate detection of the virus infection could make the difference when fighting an epidemic of such proportions.\\
-An important step in the diagnosis process is the interpretation of the image. This requires highly specialized professionals and it could be in many cases the bottleneck which prevents the quick diagnosis of large number of cases of respiratory diseases. Since this is basically a classification problem, Machine Learning and especially its subcategory Deep learning could prove to be a useful tool in this endeavor. Various Deep Learning models have demonstrated remarkable performance in image classification tasks, such as medical imaging diagnostics. Leveraging deep learning to analyze chest X-rays may provide an efficient and accurate method for detecting COVID-19 in patients, especially when traditional testing methods are not feasible.\\
-This project explores the use of various models for classifying chest X-ray images into different categories, one of them being COVID-19. By training them on labeled X-ray datasets, the goal is to develop a reliable model that can assist healthcare professionals in identifying COVID-19 cases quickly and accurately.\\
-As training data we use publicly available sets of X-ray images in a common image file format(PNG). The images were collected from different sources by a team of researchers from Qatar University, Doha, Qatar, and the University of Dhaka, Bangladesh along with their collaborators from Pakistan and Malaysia in collaboration with medical doctors \cite{chowdhury2020} \cite{rahman2020}. The sources of the images is mentioned in the reference section. The images are pre-labeled and contain:
+Medical imaging and particularly X-rays are one of the most important tools available to modern medicine in diagnosis and treatment of various diseases, due to their wide availability and cost-effectiveness. The COVID-19 pandemic has highlighted the global need for such reliable, and scalable diagnostic means. In the case of COVID-19, the symptoms are similar to respiratory viral infections, and respiratory problems becomes the principal source of morbidity and mortality in advanced cases. Therefore, a quick and accurate detection of the virus infection could make the difference when fighting an epidemic of such proportions.
+
+An important step in the diagnosis process is the interpretation of the image. This requires highly specialized professionals and it could be in many cases the bottleneck which prevents the quick diagnosis of large number of cases of respiratory diseases. Since this is basically a classification problem, Machine Learning and especially its subcategory Deep learning could prove to be a useful tool in this endeavor. Various Deep Learning models have demonstrated remarkable performance in image classification tasks, such as medical imaging diagnostics. Leveraging deep learning to analyze chest X-rays may provide an efficient and accurate method for detecting COVID-19 in patients, especially when traditional testing methods are not feasible.
+
+This project explores the use of various models for classifying chest X-ray images into different categories, one of them being COVID-19. By training them on labeled X-ray datasets, the goal is to develop a reliable model that can assist healthcare professionals in identifying COVID-19 cases quickly and accurately.
+
+As training data we use publicly available sets of X-ray images in a common image file format (PNG). The images were collected from different sources by a team of researchers from Qatar University, Doha, Qatar, and the University of Dhaka, Bangladesh along with their collaborators from Pakistan and Malaysia in collaboration with medical doctors \cite{chowdhury2020} \cite{rahman2020}. The sources of the images is mentioned in the reference section. The images are pre-labeled and contain:
 \begin{itemize}
-    \item X-ray images of healthy lungs (labeled 'Normal').
+    \item X-ray images of healthy lungs (labeled 'Normal')
     \item COVID-19 positive cases
-    \item  Viral Pneumonia positive cases.
-    \item  Lung Opacity positive cases.
+    \item  Viral Pneumonia positive cases
+    \item  Lung Opacity positive cases
 \end{itemize}
  
-Our models will have to classify the images and especially detect the COVID-19 cases reliably. In this project we tested several Machine Learning and Deep Learning models in order to establish the best one for this task. We could not be exhaustive in our search, rather we selected the models with the best chances of obtaining a good result.\\
-In the first step we tried to understand the dataset content and distribution, we identified and tried to address the data imbalance, biases and noises. We tried a few Machine Learning algorithms and then moved to Deep Learning algorithms, selecting the best one. We tried also pre-trained models specialized in image recognition. The metrics used for selection are the Confusion Matrix, which tells us how many images were correctly classified and the Classification Report which provides useful scores, most importantly the f1 score.\\
-This report will detail our approach to this problem. We will start with a short description of the dataset. We will continue with a short list of the Machine Learning models we tested and a short description of hyper-parameter selection. Then we will continue with the Deep learning models we approached (including the pre-trained ones we used for transfer learning), we will detail the feature selection and finally draw conclusions and discuss about future work and possible improvements.  
+Our models will have to classify the images and especially detect the COVID-19 cases reliably. In this project we tested several Machine Learning and Deep Learning models in order to establish the best one for this task. We could not be exhaustive in our search, rather we selected the models with the best chances of obtaining a good result.
+
+In the first step we tried to understand the dataset content and distribution, we identified and tried to address the data imbalance, biases and noises. We tried a few Machine Learning algorithms and then moved to Deep Learning algorithms, selecting the best one. We tried also pre-trained models specialized in image recognition. The metrics used for selection are the Confusion Matrix, which tells us how many images were correctly classified and the Classification Report which provides useful scores, most importantly the f1-score.
+
+This report will detail our approach to this problem. We will start with a short description of the dataset. We will continue with a short list of the Machine Learning models we tested and a short description of hyperparameter selection. Then we will continue with the Deep learning models we approached (including the pre-trained ones we used for transfer learning), we will detail the feature selection and finally draw conclusions and discuss future work and possible improvements.  
 
 %------------------------------------------------------------------------
 % Chapter 2: Dataset Overview
 %------------------------------------------------------------------------
-\section{Dataset Overview - Description of the "Chest-X-Ray" Dataset}
-The source of the dataset is \href{https://www.kaggle.com/tawsifurrahman/covid19-radiography-database} {Kaggle}. The size of the dataset is 1.15GB. It contains the following items:
+\section{Dataset Overview - Description of the "Chest-X-Ray" Dataset} \label{section:data}
+The source of the dataset is \href{https://www.kaggle.com/tawsifurrahman/covid19-radiography-database} {Kaggle}. The size of the dataset is 1.15 GB. It contains the following items:
 \begin{itemize}
-    \item a set of 3616  X-ray images of COVID positive cases.
-    \item a set of 3616 mask images for the COVID images.
-    \item a set of 6012  X-ray images of Lung Opacity positive cases.
-    \item a set of 6012 mask images for the Lung Opacity images.
-    \item a set of 10192  X-ray images of Normal (healthy) cases.
-    \item a set of 10192 mask images for the Normal images.
-    \item a set of 1345  X-ray images of Viral Pneumonia positive cases.
-    \item a set of 1345 mask images for the Viral Pneumonia images.
+    \item a set of 3616  X-ray images of COVID positive cases
+    \item a set of 3616 mask images for the COVID images
+    \item a set of 6012  X-ray images of Lung Opacity positive cases
+    \item a set of 6012 mask images for the Lung Opacity images
+    \item a set of 10192  X-ray images of Normal (healthy) cases
+    \item a set of 10192 mask images for the Normal images
+    \item a set of 1345  X-ray images of Viral Pneumonia positive cases
+    \item a set of 1345 mask images for the Viral Pneumonia images
     \item  4 Excel files containing metadata for each set of images
 \end{itemize}
 
 The metadata files contain the following information:
 \begin{itemize}
     \item image size: all images sizes are mentioned here to be 256x256 pixels. However, the analysis showed that this is not accurate
-    \item images format: all images are in the PNG format.
-    \item image source: there are multiple sources for the images, as described below.
+    \item images format: all images are in the PNG format
+    \item image source: there are multiple sources for the images, as described below
 \end{itemize}
 
 COVID-19 images:
@@ -144,8 +149,8 @@ The mask images isolate the lung area from the X-ray image. Each X-ray image has
     \end{minipage}  
 \end{figure}
 
-A first analysis of the images themselves shows that some information in the metadata files is wrong. The size of the images vary, as shown in the table below:
-\begin{table}[H]
+A first analysis of the images themselves shows that the size of the X-ray images is 299 x 299 pixels, different from the 256 x 256 described in the metadata files. Therefore, the size of the X-rays does not match the size of the lung masks, as shown in the table \ref{tab:iamges_sizes}.
+\begin{table}[htb]
     \centering
     \begin{tabular}{|c|c|c|}
         \hline
@@ -157,8 +162,8 @@ A first analysis of the images themselves shows that some information in the met
     \caption{Size of X-ray images and lung masks}
     \label{tab:iamges_sizes}
 \end{table}
-Another problem is the format of the images: some are in RGB not grayscale. We had to take this into account during the data preparation phase.\\
-The solution for the different sizes of the maska and images was a simple resizing of the masks to 299 x 299 pixel by using the resize-function of the OpenCV Python library. As interpolation method we used “cv2.INTER CUBIC”. This can be seen in detail in the overlay of some resized masks and X-ray images in figure \ref{fig:overlay_masks_images}.
+This table shows another problem: some of the X-ray images are in RGB not grayscale. We had to take this into account during the data preparation phase.\\
+The solution for the different sizes of the masks and images was a simple resizing of the masks to 299 x 299 pixel by using the resize-function of the OpenCV Python library. As interpolation method we used “cv2.INTER CUBIC”. This can be seen in detail in the overlay of some resized masks and X-ray images in figure \ref{fig:overlay_masks_images}.
 
 \begin{figure}[htb]
     \centering
@@ -167,9 +172,16 @@ The solution for the different sizes of the maska and images was a simple resizi
     \label{fig:overlay_masks_images}
 \end{figure}   
 
-We also noticed a class imbalance in the data. The distribution between the classes is very unequal, the 'Normal' class (10192 images) is almost 8 times more numerous than the 'Viral Pneumonia' class. The other 2 classes have also significantly less images. Therefore, we needed to apply data augmentation(albumentations) for minority classes. This ensures the model does not become biased toward the majority classes and maintains fair performance across all categories.
+We also noticed a class imbalance in the data, see figure \ref{fig:classes}. The distribution between the classes is very unequal, the 'Normal' class (10192 images) is almost 8 times more numerous than the 'Viral Pneumonia' class. The other 2 classes have also significantly fewer images. Therefore, we needed to apply data augmentation (albumentations) for minority classes. This ensures the model does not become biased toward the majority classes and maintains fair performance across all categories.
 
-The next step in our analysis were the exploratory data visualizations. We created class-wise and source-wise smoothed Kernel Density Estimate (KDE) plots for mean pixel intensities and for standard deviations (std) of pixel intensities. The conclusion was that different classes show distinct mean intensity patterns. COVID images tend to be brighter on average, potentially due to artifacts or progression patterns, while Lung Opacity images are darker. Also the images have significantly different mean and standard deviation values of pixel intensities across the four classes. This variation reflects inherent differences in image acquisition conditions or dataset characteristics (for example, images taken with different machines or in different settings may have varying brightness and contrast levels), which could introduce bias into any Machine Learning model.\\
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=1\linewidth]{classes.png}
+    \caption{Imbalance in classes of X-ray images and corresponding lung masks.}
+    \label{fig:classes}
+\end{figure}  
+
+The next step in our analysis was the exploratory data visualization. We created class-wise and source-wise smoothed Kernel Density Estimate (KDE) plots for mean pixel intensities and for standard deviations (std) of pixel intensities. The conclusion was that different classes show distinct mean intensity patterns. COVID images tend to be brighter on average, potentially due to artifacts or progression patterns, while Lung Opacity images are darker. Also, the images have significantly different mean and standard deviation values of pixel intensities across the four classes. This variation reflects inherent differences in image acquisition conditions or dataset characteristics (for example, images taken with different machines or in different settings may have varying brightness and contrast levels), which could introduce bias into any Machine Learning model.\\
 To minimize source-related bias and standardize image quality across the dataset, we applied the following preprocessing steps:
 \begin{itemize}
     \item Grayscale Conversion (L-channel): All images were converted to grayscale using OpenCV (RGB conversion to L).
@@ -209,9 +221,9 @@ The preprocessed images are converted to numpy arrays and stored as .npz files f
 \subsection{Overview of the modeling}
 This chapter summarizes the modeling carried out in this project. Not all modeling runs which have been performed are described. These can be found in our 2nd report: "Second\_report.Covid\_xray.pdf". Here we focus on presenting the essential modeling steps for each model used. In addition, the best results of each model are presented. 
 
-In this project we used a two-step approach to solve this classification task. Initially, we applied machine learning techniques to extract meaningful insights. The models used were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out. This data preparation had been done previously to training. 
+In this project we used a two-step approach to solve this classification task. Initially, we applied machine learning techniques to extract meaningful insights. The models used were “Logistic Regression”, “Random Forest”, “Support Vector Machines” and “XGBoost”. As a transition to deep learning, we also tried out “MLP-Classifier”. For the tests with the machine learning models, we prepared the input data in different ways so that we had different data sets that we could try out. This data preparation had been done previously to training, as described in chapter \ref{section:data}.
 
-As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used a self-build lightweight Convolutional Networks (CNN). On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: EfficientNet, InceptionV3, DenseNet121 and VGG16. Finally, we combined two different deep learnin models to an ensemble model. We tried to apply these models with and without fine-tuning to our data. 
+As a second step, we tried to solve this classification task with deep learning models. On the one hand, we used a self-build lightweight Convolutional Networks (CNN). On the other hand, we applied transfer learning. Therefore, the following pretrained models from KERAS were used: EfficientNet, InceptionV3, DenseNet121 and VGG16. Finally, we combined two different deep learning models to an ensemble model. We tried to apply these models with and without fine-tuning to our data. 
 
 %------------------------------------------------------------------------
 % 3.2 : Machine Learning Tequniqes
@@ -371,7 +383,7 @@ In order to try to further improve the accuracy of the models predictions an adv
 
 So we went back to the most promising model run so far, which used a simpler version of the VGG16 model with the last 8 layers unfrozen. As this is our most promesing model so far, we applied the Grad-CAM technique (Gradient-weighted Class Activation Mapping) to visually interpret the decisions made by a deep learning model. This technique shows which parts of the image influenced the model’s decision the most. Unfortunately this revealed dispersed and inconsistent attention. While some activations align with lung fields, many highlight irrelevant regions such as edges or corners, suggesting overfitting or sensitivity to non-diagnostic artifacts. However, certain images demonstrate reasonable focus on areas potentially indicating pathology (e.g., lung opacity).
 
-As the Grad-CAM showed that our most promising model does not only focus on the lung areas of the X-ray images, we repeated that model run but with additionally using attention masks. The Gradcam results showed better focus on the area of interest. Also the the classification results improved as follows:It achieved an overall accuracy of 94\% on the test set of 3,598 samples. The model performed particularly well on the COVID class, with a precision of 0.97, recall of 0.99, and F1-score of 0.98, indicating high sensitivity and low false-negative rates. Similarly, the Viral Pneumonia class exhibited robust performance with an F1-score of 0.98. The Normal class yielded an F1-score of 0.95, reflecting both high precision and recall. The Lung Opacity class, though slightly lower in recall (0.90), still achieved a strong F1-score of 0.91, suggesting reliable detection. Overall, the macro-averaged F1-score across classes was 0.95, affirming the attention masks on vgg16 (last 8 unfreeze layers)model’s balanced effectiveness across both common and less frequent pathologies.
+As the Grad-CAM showed that our most promising model does not only focus on the lung areas of the X-ray images, we repeated that model run but with additionally using attention masks. The Gradcam results showed better focus on the area of interest. Also, the classification results improved as follows: It achieved an overall accuracy of 94\% on the test set of 3,598 samples. The model performed particularly well on the COVID class, with a precision of 0.97, recall of 0.99, and F1-score of 0.98, indicating high sensitivity and low false-negative rates. Similarly, the Viral Pneumonia class exhibited robust performance with an F1-score of 0.98. The Normal class yielded an F1-score of 0.95, reflecting both high precision and recall. The Lung Opacity class, though slightly lower in recall (0.90), still achieved a strong F1-score of 0.91, suggesting reliable detection. Overall, the macro-averaged F1-score across classes was 0.95, affirming the attention masks on Vgg16 (last 8 unfreeze layers) model’s balanced effectiveness across both common and less frequent pathologies.
 
 
 %------------------------------------------------------------------------
@@ -379,7 +391,7 @@ As the Grad-CAM showed that our most promising model does not only focus on the 
 %------------------------------------------------------------------------
 
 \subsubsection {Ensemble Model} 
-We then chose our VGG16 model with attention mask(unfreeze layers) and custom CNN model with 3 convolution blocks and built a voting ensemble mode.
+We then chose our VGG16 model with attention masks (unfreezed layers) and the custom CNN model with 3 convolution blocks and built a voting ensemble mode.
 
 Two dataset configurations were constructed from the same base set of chest X-ray images with corresponding lung masks:
 
@@ -397,6 +409,7 @@ Two dataset configurations were constructed from the same base set of chest X-ra
 \caption{Comparison of dataset input strategies.}
 \end{table}
 
+\vspace{10 mm}
 \underline{Model Architectures}
 
 \begin{itemize}
@@ -419,13 +432,14 @@ Softmax predictions from both models are averaged during inference:
 
 This ensemble is parameter-free and does not require additional training. It effectively blends model outputs and improves robustness, especially when the base models have diverse architectural characteristics.The final voting-based classification model was saved as \texttt{voting\_ensemble\_model.keras} and was subsequently used for generating class activation maps (Grad-CAM) to visualize model attention.
 
-Figure\ref{fig: Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model:
+Figure\ref{fig: Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model.
+
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=0.5\linewidth]{cm_cr_ensemble.png}
     \caption{Evaluation for ensemble}
     \label{fig: Confusion matrix for ensemble}
-\end{figure}\\
+\end{figure}
 
 
 \underline{Grad-CAM and Localization Evaluation}
@@ -447,7 +461,6 @@ CNN + Stacked Mask & High  & Diffuse, weak heatmaps with limited discriminative 
 \end{tabular}
 \caption{Grad-CAM-based qualitative analysis of model attention.}
 \end{table}
-
 
 
 Figure \ref{fig:Visualization of Gradcam} compares the interpretability and performance of various deep learning models used for chest X-ray classification. The visualizations show heatmaps (via Grad-CAM) that highlight where each model "looks" when making predictions.
@@ -484,20 +497,22 @@ Therefore the ensemble model offers more reliable and interpretable insights int
 \subsection{Machine Learning vs. Deep Learning for classification of chest X-ray images}
 
 From the various runs with different machine learning models we came to the conclusion, that it is not possible to use fullsize images (299 x 299 pixels) with these models. 
-When trying to use the fullsize images, we had severe performance issues as the trainig comsumed too much RAM which even led to a crash of the model run. Therefore, the image size had to be reduced to e.g. 128 x 128 pixels and for some models even more drastically to even 20 x 20 pixels. A disadvantage of the intensivly reduced pixel number leads to a loss of information in the X-ray images, which could influence the model performance. 
+When trying to use the fullsize images, we had severe performance issues as the trainig comsumed too much RAM which even led to a crash of the model run. Therefore, the image size had to be reduced to e.g. 128 x 128 pixels and for some models even more drastically to even 20 x 20 pixels. A disadvantage of the intensivly reduced pixel number leads is, that this leads to a loss of information in the X-ray images, which could influence the model performance. 
 
 Additionally, for some machine learning models, the number of images used for training also had to be reduced due to performance issues. This reduced the variety of images involved in the training of the model. 
 
-Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception too this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
+Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception to this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
 
 Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86\% and surprisingly good predictions for the COVID class of 89\%). 
-The advantages of these machine learning models were: 
-* As they need limited computational resources we could run them on our local computers.
-* As training is much faster than using deep learning models, more runs with different parameters and input data could be tested. 
+The advantages of these machine learning models are: 
+\begin{itemize}
+    \item As they need limited computational resources we could run them on our local computers.
+    \item As training is much faster than using deep learning models, more runs with different parameters and input data could be tested. 
+\end{itemize}
 
 Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features. Furthermore, less "man power" is needed for the preprocessing of the images. 
 
-Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using these models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal using a model with the highest possible accuracy we assume that the higher computational costs and the more time-consuming training of a deep learning model is acceptable.\\
+Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using these models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal by using a model with the highest possible accuracy, we assume that the higher computational costs and the more time-consuming training of a deep learning model is acceptable.\\
 
 %------------------------------------------------------------------------
 % Chapter 4.2: Which model to
@@ -686,6 +701,7 @@ Working within Google Colab imposed memory and runtime constraints. Model checkp
 \underline{Other Considerations}
 Occasional interruptions in access to cloud resources, syncing issues with Google Drive, and the complexity of managing multiple model files and configurations also added to the logistical load. Moreover, integrating intermediate results from separate models into a unified evaluation pipeline required careful coordination and documentation.
 
+\newpage
 
 %------------------------------------------------------------------------
 % Chapter 7: Appendices
@@ -694,6 +710,7 @@ Occasional interruptions in access to cloud resources, syncing issues with Googl
 
 You can find the GitHub repository belonging to this project here: \\
 \url{https://github.com/DataScientest-Studio/mar25-bds_analysis-of-covid-19-chest-x-rays}\\
+
 
 
 %------------------------------------------------------------------------
