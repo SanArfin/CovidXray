@@ -48,9 +48,11 @@ As training data we use publicly available sets of X-ray images in a common imag
  
 Our models will have to classify the images and especially detect the COVID-19 cases reliably. In this project we tested several Machine Learning and Deep Learning models in order to establish the best one for this task. We could not be exhaustive in our search, rather we selected the models with the best chances of obtaining a good result.
 
-In the first step we tried to understand the dataset content and distribution, we identified and tried to address the data imbalance, biases and noises. We tried a few Machine Learning algorithms and then moved to Deep Learning algorithms, selecting the best one. We tried also pre-trained models specialized in image recognition. The metrics used for selection are the Confusion Matrix, which tells us how many images were correctly classified and the Classification Report which provides useful scores, most importantly the f1-score.
+In the first step we tried to understand the dataset content and distribution, we identified and tried to address the data imbalance, biases and noises. We tried a few Machine Learning algorithms and then moved to Deep Learning algorithms, selecting the best one. We tried also pretrained models specialized in image recognition. The metrics used for selection are the Confusion Matrix, which tells us how many images were correctly classified and the Classification Report which provides useful scores, most importantly the f1-score.
 
-This report will detail our approach to this problem. We will start with a short description of the dataset. We will continue with a short list of the Machine Learning models we tested and a short description of hyperparameter selection. Then we will continue with the Deep learning models we approached (including the pre-trained ones we used for transfer learning), we will detail the feature selection and finally draw conclusions and discuss future work and possible improvements.  
+This report will detail our approach to this problem. We will start with a short description of the dataset. We will continue with a summary of the tests we performed with several models: first Machine Learning models and then we will continue with the Deep learning models (including the pretrained ones we used for transfer learning). Finally, we will draw the conclusion which is the best model we tested and discuss the difficulties we encountered and possible improvements.  
+
+\newpage
 
 %------------------------------------------------------------------------
 % Chapter 2: Dataset Overview
@@ -80,8 +82,8 @@ COVID-19 images:
 \begin{itemize}
     \item 2473 images from padchest dataset \cite{url_1}
     \item 183 images from a Germany medical school \cite{url_2}
-    \item 559 images from SIRM, Github, Kaggle and Tweeter \cite{url_3}, \cite{url_4}, \cite{url_5}, \cite{url_6}
-    \item 400 images from another Github source \cite{url_7}
+    \item 559 images from SIRM, GitHub, Kaggle and Tweeter \cite{url_3}, \cite{url_4}, \cite{url_5}, \cite{url_6}
+    \item 400 images from another GitHub source \cite{url_7}
 \end{itemize}
 
 Lung Opacity images:
@@ -182,7 +184,7 @@ We also noticed a class imbalance in the data, see figure \ref{fig:classes}. The
 \end{figure}  
 
 The next step in our analysis was the exploratory data visualization. We created class-wise and source-wise smoothed Kernel Density Estimate (KDE) plots for mean pixel intensities and for standard deviations (std) of pixel intensities. The conclusion was that different classes show distinct mean intensity patterns. COVID images tend to be brighter on average, potentially due to artifacts or progression patterns, while Lung Opacity images are darker. Also, the images have significantly different mean and standard deviation values of pixel intensities across the four classes. This variation reflects inherent differences in image acquisition conditions or dataset characteristics (for example, images taken with different machines or in different settings may have varying brightness and contrast levels), which could introduce bias into any Machine Learning model.\\
-To minimize source-related bias and standardize image quality across the dataset, we applied the following preprocessing steps:
+To minimize source-related bias and standardize image quality across the dataset, we applied the following preprocessing steps before using it as input for the machine learning models:
 \begin{itemize}
     \item Grayscale Conversion (L-channel): All images were converted to grayscale using OpenCV (RGB conversion to L).
     \item Contrast Enhancement with Contrast Limited Adaptive Histogram Equalization (CLAHE): Applied CLAHE to help standardize the contrast across images.
@@ -190,24 +192,25 @@ To minimize source-related bias and standardize image quality across the dataset
      \item Pixel Value Normalization: Ensures that all images lie within the same range, preventing models from learning biased patterns based on intensity differences.
 \end{itemize}
 
-Figures \ref{fig:KDE_pre_post_normalization_class} and \ref{fig:KDE_pre_post_normalization_URL} show the effect of the normalization. 
+Figures \ref{fig:KDE_pre_post_normalization_class} and \ref{fig:KDE_pre_post_normalization_URL} show the effect of the normalization. \\
+The preprocessed images are converted to numpy arrays and stored as .npz files for fast loading during training and evaluation with the machine learning models.
 
-\begin{figure}[H] % the [h!] helps force it "here"
+
+\begin{figure} % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{Screenshot 2025-04-21 223200.png}
     \caption{Distribution of mean and std of pixel intensities of the X-ray images before and after normalization by classes}
     \label{fig:KDE_pre_post_normalization_class}
 \end{figure}
 
-\begin{figure}[h!] % the [h!] helps force it "here"
+\begin{figure} % the [h!] helps force it "here"
     \centering
     \includegraphics[width=1.0\linewidth]{Screenshot 2025-04-21 223207.png}
     \caption{Distribution of mean and std of pixel intensities of the X-ray images before and after normalization by sources}
     \label{fig:KDE_pre_post_normalization_URL}
 \end{figure}
 
-The preprocessed images are converted to numpy arrays and stored as .npz files for fast loading during training and evaluation.
-
+\newpage
 
 %------------------------------------------------------------------------
 % Chapter 3: Methodology - Modelling
@@ -283,7 +286,7 @@ Therefore, we decided to use already extracted features as input data of the SVM
 % 3.2.4 : XGBoost - Extreme Gradient Boosting
 %------------------------------------------------------------------------
 
-\subsubsection{XGBoost - Extreme Gradient Boosting}
+\subsubsection{XGBoost - Extreme Gradient Boosting} \label{section:XGBoost}
 As XGBoost - models (Extreme Gradient Boosting) are known for handling large datasets efficiently we gave this a try. We performed 5 different test runs with a XGBoost - model. 
 
 As a first step, we tested the performance of an XGBoost model against the previously utilized SVM model using the same input data (4000 images with 128 × 128 pixels). XGBoost significantly outperformed SVM in terms of efficiency, completing the task in just 5 minutes compared to SVM’s 1-hour runtime. Furthermore, the accuracy of the XGBoost prediction was much better. 
@@ -374,7 +377,7 @@ We achieved less good results with the DenseNet121 model than with other models.
 % VGG16
 %------------------------------------------------------------------------
 
-\subsubsection {VGG16} 
+\subsubsection {VGG16} \label{section:VGG16}
 We performed 7 major model runs using a pretrained VGG16 model. As already seen in chapter \ref{section:InceptionV3} on the InceptionV3 model, for the model runs of the VGG16 model the data processing was adapted to be done dynamically before training, rather than offline, allowing easier modifications.
 
 In the first model runs the convolutional base of VGG16 was used as a fixed feature extractor by freezing its layers, allowing only the custom classification head of the model to be trained. The predictions for some classes were very poor, so we moved on to test to unfreeze some of the layers of the pretrained VGG16 model. This allowed the model to adapt more effectively to domain-specific features in chest radiographs while still retaining the benefits of transfer learning. We tried several model runs with unfreezing the last 4, 8 or 15 layers. The model run with unfreezing the last 8 layers showed the best results we achieved using a VGG16 model: an overall accuracy of 91\% and also good results for the COVID class: precision 99\%, recall 82\% and f1-score 90\%. This outcome highlights that more aggressive fine-tuning does not always guarantee better performance and that a well-calibrated balance between fixed and trainable layers often yields the most robust results. The curves of loss and accuracy over the different epochs suggest that the model is converging. The accuracy increases and the loss decreases as expected which implies that we can trust in this model's predictions.
@@ -390,7 +393,7 @@ As the Grad-CAM showed that our most promising model does not only focus on the 
 % Ensemble Model
 %------------------------------------------------------------------------
 
-\subsubsection {Ensemble Model} 
+\subsubsection {Ensemble Model} \label{section:ensemble_model}
 We then chose our VGG16 model with attention masks (unfreezed layers) and the custom CNN model with 3 convolution blocks and built a voting ensemble mode.
 
 Two dataset configurations were constructed from the same base set of chest X-ray images with corresponding lung masks:
@@ -432,15 +435,14 @@ Softmax predictions from both models are averaged during inference:
 
 This ensemble is parameter-free and does not require additional training. It effectively blends model outputs and improves robustness, especially when the base models have diverse architectural characteristics.The final voting-based classification model was saved as \texttt{voting\_ensemble\_model.keras} and was subsequently used for generating class activation maps (Grad-CAM) to visualize model attention.
 
-Figure\ref{fig: Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model.
+Figure\ref{fig:Confusion matrix for ensemble} shows the classification report and the confusion matrix of the ensemble model.
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
     \includegraphics[width=0.5\linewidth]{cm_cr_ensemble.png}
     \caption{Evaluation for ensemble}
-    \label{fig: Confusion matrix for ensemble}
+    \label{fig:Confusion matrix for ensemble}
 \end{figure}
-
 
 \underline{Grad-CAM and Localization Evaluation}
 
@@ -472,7 +474,7 @@ Figure \ref{fig:Visualization of Gradcam} compares the interpretability and perf
      \item Finally, a voting ensemble model that combines predictions from all three approaches achieved a balanced accuracy of 92\%, leveraging their complementary strengths.
 \end{itemize}
 
-Therefore the ensemble model offers more reliable and interpretable insights into model decision-making.
+Therefore, the ensemble model offers more reliable and interpretable insights into model decision-making.
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
@@ -483,6 +485,7 @@ Therefore the ensemble model offers more reliable and interpretable insights int
 
 
 
+\newpage
 
 %------------------------------------------------------------------------
 % Chapter 4: Conclusion and Future Work
@@ -503,7 +506,8 @@ Additionally, for some machine learning models, the number of images used for tr
 
 Our tests have shown that machine learning models perform better when using extracted features as input rather than the images themselves. An exception to this is the XGBoost model. A XGBoost model on 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) gave us the best overall accuracy and not the model run using the already extracted features by HOG-technique. 
 
-Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86\% and surprisingly good predictions for the COVID class of 89\%). 
+Despite these limitations, we were even able to achieve relatively good results with machine learning models. (XGBoost with an overall accuracy of 86\% and surprisingly good predictions for the COVID class of 89\%, chapter \ref{section:XGBoost}). 
+
 The advantages of these machine learning models are: 
 \begin{itemize}
     \item As they need limited computational resources we could run them on our local computers.
@@ -512,14 +516,14 @@ The advantages of these machine learning models are:
 
 Deep learning offers significant advantages over traditional machine learning for classifying chest X-ray images. These models excel in handling high-dimensional data and they can automatically identify relevant features. Deep learning models, particularly convolutional neural networks (CNNs), learn features directly from raw image data, so that no preprocessing like feature extraction and applying relevant filters has to be done by hand. This ability allows them to capture subtle patterns and complex structures that may be missed by manually designed features. Furthermore, less "man power" is needed for the preprocessing of the images. 
 
-Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. When using these models to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Reaching this goal by using a model with the highest possible accuracy, we assume that the higher computational costs and the more time-consuming training of a deep learning model is acceptable.\\
+Our tests with several deep learning models showed that we could further improve the accuracy of the predictions to 92\% even for the COVID class we got scores of 93-95\%. However, deep learning models have higher computational costs and the training is more time-consuming. When using modelling techniques to determine if a patient has COVID or other deseases it is important not to miss out a sick person. Therefore, the above-mentioned disadvantages of deep learning models can be accepted in order to achieve more accurate predictions.
 
 %------------------------------------------------------------------------
 % Chapter 4.2: Which model to
 %------------------------------------------------------------------------
 
 \subsection{Which model to chose?}
-The best results of each model type are presented in table \ref{tab:model_performance}. The overall accuracy is shown and the scores (precision, recall and f1-score) for the COVID-class. 
+The best results of each model type are summariezed in table \ref{tab:model_performance}. The overall accuracy is shown and the scores (precision, recall and f1-score) for the COVID-class. 
 
 \begin{table}[h]
     \centering
@@ -553,16 +557,14 @@ The best results of each model type are presented in table \ref{tab:model_perfor
     \label{tab:model_performance}
 \end{table}
 
-The first part of the project concentrated on using different machine learning models. Using ML models, we got the best results with a XGBoost model using 128 x 128 images without masks, no filter (Clahe, Gaussian Blur). The overall accuracy was 86\%. This model's classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score. 
+The first part of the project concentrated on using different machine learning models. Using ML models, we got the best results with a XGBoost model using 128 x 128 images without masks, no filter (Clahe, Gaussian Blur) (chapter \ref{section:XGBoost}). The overall accuracy was 86\%. This model's classification performance for the COVID-class reached impressive 89\% for precision, recall and f1-score. 
 
-By using deep learning models we could further improve the accuracy of the predictions. The scores of runs with an InceptionV3 model looked very good. This model's best run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%). However, further inspections of these model revealed that it as convergence problems. 
+By using deep learning models we could further improve the accuracy of the predictions. The scores of runs with a pretrained and fine-tuned InceptionV3 model looked very good. This model's best run achieved an overall accuracy of 91\% and even the COVID-class is well predicted (precision 92\%, recall 91\% and f1-score 91\%) (chapter \ref{section:InceptionV3}). However, further inspections of these model revealed that it has convergence problems. 
 
-We also achieved very good results with the VGG16 model. In addition to a high overall accuracy of 91\% and also good results for the COVID class: precision 99\%, recall 82\% and f1-score 90\%, the model showed sufficient convergence. Therefore, this seemed to be the best model and could go for it. Unfortunately a Grad-CAM analysis showed that our most promising model does not only focus on the lung areas of the X-ray images. 
-
-By using attention masks, this VGG16 model improved its focus on lung areas in X-ray images, enhancing classification accuracy. It achieved 94\% overall accuracy, with strong performance in COVID (F1-score: 0.98), Viral Pneumonia (0.98), Normal (0.95), and Lung Opacity (0.91). The macro-averaged F1-score of 0.95 confirmed balanced effectiveness across various pathologies.
+We also achieved very good results with a pretrained and fine-tuned VGG16 model (chapter \ref{section:VGG16}). In addition to a high performance scores, the model showed sufficient convergence. Therefore, this seemed to be the best model and could go for it. Unfortunately a Grad-CAM analysis showed that our most promising model does not only focus on the lung areas of the X-ray images. By using attention masks, this VGG16 model improved its focus on lung areas in X-ray images, enhancing classification accuracy. It achieved 94\% overall accuracy, with strong performance in COVID (F1-score: 0.98), Viral Pneumonia (F1-score: 0.98), Normal (F1-score: 0.95), and Lung Opacity (F1-score: 0.91). The macro-averaged F1-score of 0.95 confirmed balanced effectiveness across various pathologies.
 
 
-\begin{table}[hb]
+\begin{table}%[h]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -579,7 +581,7 @@ Voting Ensemble & Slightly Lower & Slightly Lower & Best \\
 \label{tab:ensemble_performance}
 \end{table}
 
-The voting ensemble model\ref{tab:ensemble_performance}, though slightly lower in raw metrics, demonstrated:
+The voting ensemble model (table \ref{tab:ensemble_performance}, and chapter \ref{section:ensemble_model}), though slightly lower in raw metrics, demonstrated:
 
 \begin{itemize}
   \item Best localization performance via Grad-CAM
@@ -591,24 +593,29 @@ The voting ensemble model\ref{tab:ensemble_performance}, though slightly lower i
 \textbf{Therefore, the voting ensemble is the recommended model for practical deployment, balancing accuracy, interpretability, and robustness.}
 
 
-
-
-
+\newpage
 
 %------------------------------------------------------------------------
 % Chapter 5: Discussion - Reflecting on our project
 %------------------------------------------------------------------------
-\section{Discussion - Reflecting on our project}
+\section{In-depth review of our final model}
 
-\underline{ Overall Model Performance }
+\subsection{Further analysis}
+
+In this chapter we will take a deeper look on our finally chosen model to show its strengths and weaknesses.
+
+\underline{Overall Model Performance}\\
+The classification report and the confusion matrix in figure \ref{fig:Confusion matrix for ensemble} show:
 \begin{itemize}
-    \item Accuracy: 0.9203 → Very high, showing robust performance.
-    \item Precision \& Recall: High across all classes, especially COVID and Viral Pneumonia.Slight recall drop for Lung\_Opacity (0.85), indicating some missed true positives.
-    \item Confusion Matrix observations:Normal misclassified as Lung\_Opacity: 47 times.Lung\_Opacity misclassified as Normal: 121 times. Suggests confusion between Normal and Lung Opacity, likely due to subtle visual overlaps.
+    \item Accuracy: 0.92 → Very high, showing robust performance.
+    \item Precision \& Recall: High across all classes, especially COVID and Viral Pneumonia. Slight recall drop for Lung\_Opacity (0.85), indicating some missed true positives.
+    \item Confusion Matrix observations: Normal misclassified as Lung\_Opacity: 47 times. Lung\_Opacity misclassified as Normal: 121 times. Suggests confusion between Normal and Lung Opacity, likely due to subtle visual overlaps.
 \end{itemize}
 
-\underline{Confidence Analysis (Subfigure a, top-left)}
-Per-class Average Confidence:
+\vspace{0.4cm}
+
+\underline{Confidence Analysis (figure \ref{fig:error_analysis} a, top-left)}\\
+The average confidence per-class is:
 \begin{itemize}
     \item Viral Pneumonia: 0.7938
     \item COVID: 0.7786
@@ -617,10 +624,11 @@ Per-class Average Confidence:
 \end{itemize}
 
 Interpretation:
-
-The ensemble is less confident when predicting "Normal" — possibly due to overlap with subtle opacity patterns.
-Highest confidence in COVID and Viral Pneumonia → good class separation and learning.
-Moderate confidence for Lung\_Opacity — matches the lower recall from the confusion matrix.
+\begin{itemize}
+    \item The ensemble is less confident when predicting "Normal", possibly due to overlap with subtle opacity patterns. 
+    \item Highest confidence in COVID and Viral Pneumonia → good class separation and learning.
+    \item Moderate confidence for Lung\_Opacity — matches the lower recall from the confusion matrix.
+\end{itemize}
 
 \begin{figure}%[h!] % the [h!] helps force it "here"
     \centering
@@ -629,27 +637,30 @@ Moderate confidence for Lung\_Opacity — matches the lower recall from the conf
     \label{fig:error_analysis}
 \end{figure}
 
-\underline{Misclassified Examples (Subfigures a \& b)}\\
+\vspace{0.4cm}
 
-These panels show:
-Original X-ray + Lung Mask + Predicted Probabilities
-Example b1 and b2:
-True: Normal, but predicted:As Lung\_Opacity (b1 and b3) and As Viral Pneumonia(b2)
+\underline{Misclassified Examples (figure \ref{fig:error_analysis} a \& b)}\\
+As an example, some X-ray images are shown that are misclassified by the model. For these examples, the probabilities of the 4 different classes, which the model calculated are presented too. 
+All three example X-ray images belong to the "Normal" class. The model classified the first and third as "Lung\_Opacity" and the second as "Viral Pneumonia". 
 
 Insights:
 \begin{itemize}
-    \item The model assigns considerable confidence to incorrect classes — e.g., >0.6 for Lung\_Opacity in b1.
+    \item The model assigns considerable confidence to incorrect classes, e.g., >0.6 for Lung\_Opacity in b1.
     \item This supports the earlier finding that Normal - Lung\_Opacity confusion is a key error source.
-    \item Lung masks appear similar — suggesting visual ambiguity.
+    \item Lung masks appear similar, suggesting visual ambiguity.
 \end{itemize}
 
-\underline{Confidence Histogram (Subfigure d)}
+\vspace{0.4cm}
+
+\underline{Confidence Histogram (figure \ref{fig:error_analysis} d)}
 
 Most predictions fall around 0.55–0.65 range.
 Skewed toward moderate confidence, not overly confident.
 Indicates model is generally cautious, but some misclassifications occur even with >0.6 confidence.
 
-\underline{Reliability Diagram (Subfigure c)}
+\vspace{0.4cm}
+
+\underline{Reliability Diagram (figure \ref{fig:error_analysis} c)}\\
 Shows how well predicted probabilities align with actual accuracy.
 For predicted confidences >0.6, the model is well-calibrated (close to diagonal).
 At \~0.5 confidence, accuracy drops, showing lower trustworthiness for moderate scores.
@@ -667,7 +678,7 @@ Normal $\leftrightarrow$ Lung\_Opacity confusion & Confusion matrix and misclass
 \hline
 Low confidence in ``Normal'' class & Per-class average confidence: 0.583 & Revisit data quality or apply augmentations for Normal class \\
 \hline
-Slight overconfidence at low prediction scores & Reliability curve dips below diagonal & Use \textbf{temperature scaling} or \textbf{Platt scaling} for better confidence calibration \\
+Slight overconfidence at low prediction scores & Reliability curve is above diagonal & Use \textbf{temperature scaling} or \textbf{Platt scaling} for better confidence calibration \\
 \hline
 Misclassifications are not always low-confidence & Examples shown in Figure~\ref{fig:error_analysis} (part b) & Consider ensemble thresholding or abstaining from low-confidence predictions \\
 \hline
@@ -677,7 +688,9 @@ Misclassifications are not always low-confidence & Examples shown in Figure~\ref
 \end{table}
 
 
-In conclusion the model is overconfident at lower probability bins, a common issue.These findings suggest that while the ensemble is highly effective overall, further refinement—particularly in distinguishing between Normal and Lung Opacity cases and improving calibration at lower confidence thresholds—could further enhance its reliability and trustworthiness in clinical decision-making.\\
+In conclusion the model is overconfident at lower probability bins, a common issue. These findings suggest that while the ensemble is highly effective overall, further refinement—particularly in distinguishing between Normal and Lung Opacity cases and improving calibration at lower confidence thresholds could further enhance its reliability and trustworthiness in clinical decision-making.\\
+
+\newpage
 
 \section{Difficulties Encountered}
 
