@@ -40,7 +40,6 @@ st.write("image source [https://www.kaggle.com/code/blurredmachine/vggnet-16-arc
 
 st.image('images/model_vgg16_classification_head.png', caption = "Classification head used")
 
-git 
 """
 ### Training the model
 """
