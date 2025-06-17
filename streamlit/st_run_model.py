@@ -1,4 +1,4 @@
-git import streamlit as st
+import streamlit as st
 import numpy as np
 import cv2
 import tensorflow as tf
@@ -9,8 +9,13 @@ import plotly.graph_objects as go
 @st.cache_resource
 def st_load_model():
     from tensorflow.keras.models import load_model
-    return load_model('best_model_vgg16_finetuned_gradcam.keras')
+    from huggingface_hub import hf_hub_download
 
+    model_path = hf_hub_download(
+        repo_id="SaniyaArfin/covid-xray-model",
+        filename="best_model_vgg16_finetuned_gradcam.keras"
+    )
+    return load_model(model_path)
 
 # === Preprocess grayscale image for VGG16 ===
 def preprocess_image(img_gray):

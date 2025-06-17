@@ -1,0 +1,7 @@
+streamlit==1.22.0
+matplotlib==3.7.1
+plotly==5.15.0
+huggingface_hub==0.14.1
+opencv-contrib-python-headless==4.8.0.74
+tensorflow-cpu==2.12.0
+
