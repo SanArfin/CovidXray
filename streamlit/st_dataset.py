@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import warnings
-#import plotly.express as px
-#import matplotlib.pyplot as plt
-#import seaborn as sns
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 """
 ## The Dataset
@@ -44,10 +44,10 @@ These circumstances need to be addressed when preprocessing the data for trainin
 """
 
 # # example to work "online" with data
-# df = pd.read_csv("data/df_xray_processed_normed_enc.csv")
-# st.dataframe(df.head(10))
+df = pd.read_csv("data/df_xray_processed_normed_enc.csv")
+st.dataframe(df.head(10))
 
-# fig = plt.figure()
-# sns.countplot(x = 'label', data = df)
-# st.pyplot(fig)
+fig = plt.figure()
+sns.countplot(x = 'label', data = df)
+st.pyplot(fig)
 
