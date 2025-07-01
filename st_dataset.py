@@ -44,7 +44,7 @@ These circumstances need to be addressed when preprocessing the data for trainin
 """
 
 # # example to work "online" with data
-df = pd.read_csv("data/df_xray_processed_normed_enc.csv")
+df = pd.read_csv("data/processed/df_xray_processed_normed_enc.csv")
 st.dataframe(df.head(10))
 
 fig = plt.figure()
