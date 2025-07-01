@@ -1,37 +1,22 @@
 import streamlit as st
-
 st.set_page_config(layout="wide")
+
 st.title("Chest-X-Ray Analysis")
 
-# Define your pages as functions
-def about():
-    st.write("About page content")
+# Define the pages
+st_about = st.Page("st_about.py", title="About", icon="🎈")
+st_dataset = st.Page("st_dataset.py", title="Dataset", icon="🗂️")
+st_preprocessing = st.Page("st_preprocessing.py", title="Preprocessing", icon="🛠️")
 
-def dataset():
-    st.write("Dataset page content")
+# I think it makes no sense for us to have this page?! Anything shoudl be explained in "dataset" and "preprocessing" pages
+#st_eda = st.Page("st_eda.py", title="Exploratory Data Analysis (EDA)", icon="🔍") 
 
-def preprocessing():
-    st.write("Preprocessing page content")
+st_model = st.Page("st_model.py", title="Used model", icon="⚙️")
+st_run_model = st.Page("st_run_model.py", title="Try the result!", icon="🎉")
 
-def model():
-    st.write("Model page content")
+# Set up navigation, add "st_eda" again if we need it
+pg = st.navigation([st_about, st_dataset, st_preprocessing, st_model, st_run_model])
 
-def run_model():
-    st.write("Run model page content")
+# Run the selected page
+pg.run()
 
-# Sidebar navigation
-page = st.sidebar.selectbox(
-    "Choose a page",
-    ["About", "Dataset", "Preprocessing", "Model", "Run Model"]
-)
-
-if page == "About":
-    about()
-elif page == "Dataset":
-    dataset()
-elif page == "Preprocessing":
-    preprocessing()
-elif page == "Model":
-    model()
-elif page == "Run Model":
-    run_model()

@@ -165,7 +165,7 @@ cython_debug/
 
 # Data folder
 data/
-
+*.csv
 # Latex: other files than .tex
 /reports/latex/*.aux
 /reports/latex/*.fls
