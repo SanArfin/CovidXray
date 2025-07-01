@@ -178,3 +178,9 @@ data/
 # models/local folder
 # models which should be uploaded to git should be in folder models
 models/local
+
+myenv/
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints/
+.DS_Store
